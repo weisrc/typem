@@ -4,7 +4,7 @@ import { randomString } from "../name-utils";
 import {
   LITERAL_FALSE,
   LITERAL_TRUE,
-  regularTypes,
+  generalTypes,
   specialTypes,
   type TypeMap,
 } from "./common";
@@ -47,8 +47,8 @@ function innerCodegen(
 ) {
   const typeName = context.checker.typeToString(type);
 
-  if ((regularTypes as readonly string[]).includes(typeName)) {
-    return `t.regular(${JSON.stringify(typeName)})`;
+  if ((generalTypes as readonly string[]).includes(typeName)) {
+    return `t.general(${JSON.stringify(typeName)})`;
   } else if ((specialTypes as readonly string[]).includes(typeName)) {
     return `t.special(${JSON.stringify(typeName)})`;
   } else if (typeName == "true") {

@@ -1,4 +1,4 @@
-import type { RegularType, SpecialType } from "./transform/type-codegen/common";
+import type { GeneralType, SpecialType } from "./transform/type-codegen/common";
 
 export function macro<T, P extends string>() {
   return (() => {
@@ -14,4 +14,4 @@ export type Annotation<T extends string, U> = {
   };
 };
 
-export type { RegularType, SpecialType };
+export type { GeneralType, SpecialType };

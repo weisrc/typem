@@ -3,7 +3,7 @@ import { getMarker, type TransformContext } from "../context";
 import {
   LITERAL_FALSE,
   LITERAL_TRUE,
-  REGULAR_UNDEFINED,
+  GENERAL_UNDEFINED,
   type TypeMap,
 } from "./common";
 import { typeCodegen } from ".";
@@ -102,11 +102,11 @@ export function unionCodegen(
   let mapped = types.map((t) => typeCodegen(context, t, typeMap));
   if (mapped.includes(LITERAL_TRUE) && mapped.includes(LITERAL_FALSE)) {
     mapped = mapped.filter((e) => e !== LITERAL_TRUE && e !== LITERAL_FALSE);
-    mapped.push(`t.regular("boolean")`);
+    mapped.push(`t.general("boolean")`);
   }
   let useOptional = false;
-  if (mapped.includes(REGULAR_UNDEFINED)) {
-    mapped = mapped.filter((e) => e !== REGULAR_UNDEFINED);
+  if (mapped.includes(GENERAL_UNDEFINED)) {
+    mapped = mapped.filter((e) => e !== GENERAL_UNDEFINED);
     useOptional = true;
   }
   const out = mapped.length > 1 ? `t.union(${mapped.join(", ")})` : mapped[0];

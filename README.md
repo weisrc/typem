@@ -1,3 +1,3 @@
-# Typescript Macro
+# Type Macro
 
 This is WIP.

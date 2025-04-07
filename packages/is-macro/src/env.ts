@@ -4,7 +4,7 @@ export function entry<T>(fn: Is<T>) {
   return (x: any) => fn;
 }
 
-export function regular<T>(type: string) {
+export function general<T>(type: string) {
   return ((x: any) => {
     return typeof x === type;
   }) as Is<T>;
