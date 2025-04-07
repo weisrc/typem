@@ -29,9 +29,33 @@ export function getMarker(
 
   if (!propertyType) return;
 
-  if (propertyType.isStringLiteral()) {
-    return propertyType.value;
+  return getLiteral(context, propertyType);
+}
+
+export function getLiteral(context: TransformContext, type: ts.Type): any {
+  if (type.isLiteral()) {
+    return type.value;
   }
+  if (context.checker.isTupleType(type)) {
+    return context.checker
+      .getTypeArguments(type as ts.TypeReference)
+      .map((t) => getLiteral(context, t));
+  }
+  if (type.isUnion()) {
+    const unionTypes = type.types.map((t) => getLiteral(context, t));
+    return unionTypes.filter((x) => x !== undefined)[0];
+  }
+  const properties = type.getProperties();
+  if (properties.length === 0) return;
+  const out: Record<string, any> = {};
+  for (const prop of properties) {
+    const propType = context.checker.getTypeOfSymbol(prop);
+    const value = getLiteral(context, propType);
+    if (value !== undefined) {
+      out[prop.name] = value;
+    }
+  }
+  return out;
 }
 
 export function augmentNode(

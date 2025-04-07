@@ -31,7 +31,6 @@ function createBunPlugin(preload: boolean): BunPlugin {
       );
 
       build.onResolve({ filter: /./ }, (args) => {
-        console.log("resolve", args.path);
         return isVirtual(args.path)
           ? {
               path: args.path,

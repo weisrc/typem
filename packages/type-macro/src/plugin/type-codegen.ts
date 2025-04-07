@@ -1,5 +1,5 @@
 import ts from "typescript";
-import type { TransformContext } from "./context";
+import { getMarker, type TransformContext } from "./context";
 import { randomString } from "./name-utils";
 
 type TypeMap = Map<ts.Type, { ref: string; recursive: boolean }>;
@@ -94,11 +94,15 @@ function typeCodegenHelper(
     return `union(${inner})`;
   }
   if (type.isIntersection()) {
-    const inner = type.types
-      .map((t) => typeCodegen(context, t, typeMap, imports))
-      .join(", ");
-    imports.add("intersection");
-    return `intersection(${inner})`;
+    const { annotations, rest } = splitAnnotations(context, type.types);
+    let out = intersectionCodegen(context, rest, typeMap, imports);
+
+    for (const [key, value] of Object.entries(annotations)) {
+      out = `${key}(${JSON.stringify(value)}, ${out})`;
+    }
+
+    return out;
+
   }
 
   if (context.checker.isArrayType(type)) {
@@ -126,4 +130,34 @@ function typeCodegenHelper(
 
   imports.add("object");
   return `object({${properties.join(", ")}})`;
+}
+
+function splitAnnotations(context: TransformContext, types: ts.Type[]) {
+  const annotations: Record<string, any> = {};
+  const rest: ts.Type[] = [];
+
+  for (const type of types) {
+    const annotation = getMarker(context, type, "__annotation");
+    if (annotation) {
+      Object.assign(annotations, annotation);
+    } else {
+      rest.push(type);
+    }
+  }
+
+  return { annotations, rest };
+}
+
+function intersectionCodegen(
+  context: TransformContext,
+  types: ts.Type[],
+  typeMap: TypeMap,
+  imports: Set<string>
+) {
+  const inner = types.map((t) => typeCodegen(context, t, typeMap, imports));
+  if (inner.length === 1) {
+    return inner[0];
+  }
+  imports.add("intersection");
+  return `intersection(${inner})`;
 }

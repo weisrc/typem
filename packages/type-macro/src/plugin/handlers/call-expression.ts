@@ -9,7 +9,7 @@ export function handleCallExpression(
   const type = context.checker.getTypeAtLocation(node.expression);
   const macro = getMarker(context, type, "__macro");
 
-  if (macro) {
+  if (typeof macro === "string") {
     return handleMacro(context, node, macro);
   }
 }

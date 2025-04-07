@@ -6,12 +6,8 @@ export function macro<T, P extends string>() {
   };
 }
 
-export type Annotation<P> = {
-  __annotation?: P;
+export type Annotation<T extends string, U> = {
+  __annotation?: {
+    [key in T]: U;
+  };
 };
-
-export type MacroEnv<T> = {
-  string: T;
-  number: T;
-  boolean: T;
-}

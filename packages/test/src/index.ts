@@ -1,7 +1,8 @@
-import { is } from "is-macro";
+import { is, type Email } from "is-macro";
 
 const isUser = is<{
   name: string;
+  email: string & Email;
   another?: boolean;
   manager?: boolean;
 }>(0 as any);
