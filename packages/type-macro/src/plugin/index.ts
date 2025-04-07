@@ -1,4 +1,4 @@
-import { type BunPlugin, type OnLoadResult } from "bun";
+import { type BunPlugin } from "bun";
 import { createBuild } from "./create-build";
 
 function createBunPlugin(preload: boolean): BunPlugin {

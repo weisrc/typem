@@ -1,11 +1,10 @@
 import { is, type Email } from "is-macro";
 
-const isUser = is<{
-  name: string;
-  email: string & Email;
-  another?: boolean;
-  manager?: boolean;
-}>(0 as any);
+function hello(name: string) {
+  return `Hello ${name}`;
+}
+
+const isUser = is(hello);
 
 console.log(
   isUser({

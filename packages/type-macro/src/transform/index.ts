@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { handleCallExpression } from "./handlers/call-expression";
+import { handleCall } from "./handle-call";
 import type { AddModuleFn, TransformContext } from "./context";
 
 export function transform(
@@ -26,7 +26,7 @@ export function transform(
 
 function visitNode(context: TransformContext, node: ts.Node) {
   if (ts.isCallExpression(node)) {
-    handleCallExpression(context, node);
+    handleCall(context, node);
   }
 
   node.forEachChild((child) => visitNode(context, child));

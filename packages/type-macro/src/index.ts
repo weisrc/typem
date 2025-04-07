@@ -1,3 +1,5 @@
+import type { RegularType, SpecialType } from "./transform/type-codegen/common";
+
 export function macro<T, P extends string>() {
   return (() => {
     throw new Error("Not implemented");
@@ -11,3 +13,5 @@ export type Annotation<T extends string, U> = {
     [key in T]: U;
   };
 };
+
+export type { RegularType, SpecialType };

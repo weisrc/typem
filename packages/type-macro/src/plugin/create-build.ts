@@ -1,5 +1,5 @@
 import { createTsProgram } from "./create-ts-program";
-import { transform } from "./transform";
+import { transform } from "../transform";
 import { readFile } from "fs/promises";
 
 export function createBuild(onAddModule: (name: string, code: string) => void) {

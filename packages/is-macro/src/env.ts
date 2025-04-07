@@ -1,25 +1,28 @@
 import { Is } from "./types";
 
 export function entry<T>(fn: Is<T>) {
-    return (x: any) => fn;
+  return (x: any) => fn;
 }
 
-export function basic<T>(type: string) {
+export function regular<T>(type: string) {
   return ((x: any) => {
     return typeof x === type;
   }) as Is<T>;
 }
 
-export const string = basic<string>("string");
-export const number = basic<number>("number");
-export const boolean = basic<boolean>("boolean");
-export const bigint = basic<bigint>("bigint");
-export const undefined = basic<undefined>("undefined");
-
 export function literal<T>(value: T) {
   return (x: any) => {
     return x === value;
   };
+}
+
+export function optional<T>(type: Is<T>) {
+  return ((x: any) => {
+    if (x === undefined) {
+      return true;
+    }
+    return type(x);
+  }) as Is<T>;
 }
 
 export function object<T extends object>(shape: {
