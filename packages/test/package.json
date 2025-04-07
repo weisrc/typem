@@ -1,0 +1,9 @@
+{
+  "name": "test",
+  "private": true,
+  "module": "src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "is-macro": "workspace:*"
+  }
+}

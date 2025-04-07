@@ -1,0 +1,10 @@
+{
+  "name": "type-macro-monorepo",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "type-macro": "workspace:*"
+  }
+}
