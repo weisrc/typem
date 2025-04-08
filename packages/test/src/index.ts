@@ -1,17 +1,17 @@
-import { is, type Email } from "is-macro";
+import { is, type Email, type Range } from "is-macro";
 
-function hello(name: string) {
-  return `Hello ${name}`;
-}
+type User = {
+  name: string;
+  age: number & Range<1, 100>;
+  email: string & Email;
+};
 
-const isUser = is(hello);
+const isUser = is<User>();
 
 console.log(
   isUser({
     name: "John",
-    manager: {
-      name: "Jane",
-      another: true,
-    },
+    age: 1,
+    email: "asdf@asdf.ca"
   })
 ); // true
