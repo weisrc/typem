@@ -10,6 +10,7 @@ import {
 } from "./common";
 import {
   arrayCodegen,
+  getAnnotation,
   intersectionCodegenWithAnnotations,
   objectCodegen,
   signaturesCodegen,
@@ -65,6 +66,11 @@ function innerCodegen(
     return arrayCodegen(context, type, typeMap);
   } else if (context.checker.isTupleType(type)) {
     return tupleCodegen(context, type, typeMap);
+  }
+
+  const annotation = getAnnotation(context, type);
+  if (annotation) {
+    return `t.error("annotation not in intersection")`;
   }
 
   const object = objectCodegen(context, type, typeMap);

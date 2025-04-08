@@ -25,6 +25,7 @@ export type { GeneralType, SpecialType };
 
 export type Env<T, U> = {
   entry(...args: any): T;
+  error(message: string): U;
   general(type: GeneralType): U;
   special(type: SpecialType): U;
   literal(value: any): U;

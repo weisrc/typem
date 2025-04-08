@@ -6,6 +6,10 @@ export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
 }
 
+export function error(message: string): any {
+  throw new Error(message);
+}
+
 export function general<T>(type: GeneralType) {
   return ((x: any) => {
     return typeof x === type;
@@ -143,6 +147,7 @@ export const range: AnnotationFunction<Range<number, number>, Is<number>> = (
 
 export const env: Env<IsMacro, Is<any>> = {
   entry,
+  error,
   array,
   general,
   intersection,

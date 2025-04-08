@@ -32,12 +32,16 @@ export function tupleCodegen(
   return `t.tuple(${inner})`;
 }
 
+export function getAnnotation(context: TransformContext, type: ts.Type) {
+  return getMarker(context, type, "__annotation");
+}
+
 export function splitAnnotations(context: TransformContext, types: ts.Type[]) {
   const annotations: Record<string, any> = {};
   const rest: ts.Type[] = [];
 
   for (const type of types) {
-    const annotation = getMarker(context, type, "__annotation");
+    const annotation = getAnnotation(context, type);
     if (annotation) {
       Object.assign(annotations, annotation);
     } else {
