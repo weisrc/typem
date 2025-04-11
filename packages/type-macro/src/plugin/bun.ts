@@ -1,20 +1,26 @@
-import { type BunPlugin } from "bun";
-import { createBuild } from "./create-build";
+import type { BunPlugin } from "bun";
+import { base } from "./base";
 
-function createBunPlugin(preload: boolean): BunPlugin {
+export type TypeMacroBunOptions = {
+  preload?: boolean;
+};
+
+export default function typeMacro(
+  options: TypeMacroBunOptions = {}
+): BunPlugin {
   return {
     name: "type-macro",
     async setup(build) {
-      const { load, isVirtual, loadVirtual } = createBuild(
-        preload
-          ? (name, code) => {
-              build.module(name, () => {
-                return {
-                  contents: code,
-                };
-              });
-            }
-          : () => {}
+      function onAddModule(name: string, code: string) {
+        build.module(name, () => {
+          return {
+            contents: code,
+          };
+        });
+      }
+
+      const { load, isVirtual, loadVirtual } = base(
+        options.preload ? onAddModule : () => {}
       );
 
       build.onLoad({ filter: /./ }, async (args) => {
@@ -41,6 +47,3 @@ function createBunPlugin(preload: boolean): BunPlugin {
     },
   };
 }
-
-export const preloadBunPlugin = createBunPlugin(true);
-export const bunPlugin = createBunPlugin(false);

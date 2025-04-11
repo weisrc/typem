@@ -1,8 +1,8 @@
-import { createTsProgram } from "./create-ts-program";
 import { transform } from "../transform";
 import { readFile } from "fs/promises";
+import ts from "typescript";
 
-export function createBuild(onAddModule: (name: string, code: string) => void) {
+export function base(onAddModule: (name: string, code: string) => void) {
   const program = createTsProgram();
   const modules: Record<string, string> = {};
 
@@ -33,4 +33,30 @@ export function createBuild(onAddModule: (name: string, code: string) => void) {
     loadVirtual,
     isVirtual,
   };
+}
+
+function createTsProgram() {
+  const configPath = ts.findConfigFile(
+    "./",
+    ts.sys.fileExists,
+    "tsconfig.json"
+  );
+  const config = configPath
+    ? ts.getParsedCommandLineOfConfigFile(
+        configPath,
+        {},
+        {
+          ...ts.sys,
+          onUnRecoverableConfigFileDiagnostic: console.error,
+        }
+      )
+    : null;
+
+  if (!config) {
+    throw new Error("Could not parse tsconfig.json");
+  }
+
+  const program = ts.createProgram(config.fileNames, config.options);
+
+  return program;
 }
