@@ -3,7 +3,9 @@ import { base } from "./base";
 
 export type TypeMacroRollupOptions = {};
 
-export default function typeMacro(options: TypeMacroRollupOptions = {}): Plugin {
+export default function typeMacro(
+  options: TypeMacroRollupOptions = {}
+): Plugin {
   const { load, isVirtual, loadVirtual } = base(() => {});
 
   return {

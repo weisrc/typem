@@ -4,7 +4,8 @@ type User = {
   name: string;
   age: number & Range<1, 100>;
   email: string & Email;
-  color: "red" | "green" | "blue";
+  color?: "red" | "green" | "blue";
+  test(): 123;
 };
 
 const isUser = is<User>();

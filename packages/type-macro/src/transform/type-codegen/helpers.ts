@@ -1,4 +1,4 @@
-import type ts from "typescript";
+import ts from "typescript";
 import { getMarker, type TransformContext } from "../context";
 import {
   LITERAL_FALSE,
@@ -108,13 +108,7 @@ export function unionCodegen(
     mapped = mapped.filter((e) => e !== LITERAL_TRUE && e !== LITERAL_FALSE);
     mapped.push(`t.general("boolean")`);
   }
-  let useOptional = false;
-  if (mapped.includes(GENERAL_UNDEFINED)) {
-    mapped = mapped.filter((e) => e !== GENERAL_UNDEFINED);
-    useOptional = true;
-  }
-  const out = mapped.length > 1 ? `t.union(${mapped.join(", ")})` : mapped[0];
-  return useOptional ? `t.optional(${out})` : out;
+  return mapped.length > 1 ? `t.union(${mapped.join(", ")})` : mapped[0];
 }
 
 export function objectCodegen(
@@ -124,9 +118,54 @@ export function objectCodegen(
 ) {
   const properties = type.getProperties().map((prop) => {
     const propType = context.checker.getTypeOfSymbol(prop);
-    const inner = typeCodegen(context, propType, typeMap);
+    let inner = typeCodegen(context, propType, typeMap);
+    const modifiers = getPropertyModifiers(prop);
+
+    for (const modifier of modifiers) {
+      inner = `(t.${modifier} ?? (x => x))(${inner})`;
+    }
+
     return `${JSON.stringify(prop.name)}: ${inner}`;
   });
 
   return `t.object({${properties.join(", ")}})`;
+}
+
+const MODIFIER_MAP: Partial<Record<ts.SyntaxKind, string>> = {
+  [ts.SyntaxKind.AbstractKeyword]: "abstract",
+  [ts.SyntaxKind.AccessorKeyword]: "accessor",
+  [ts.SyntaxKind.AsyncKeyword]: "async",
+  [ts.SyntaxKind.ConstKeyword]: "const",
+  [ts.SyntaxKind.DeclareKeyword]: "declare",
+  [ts.SyntaxKind.DefaultKeyword]: "default",
+  [ts.SyntaxKind.ExportKeyword]: "export",
+  [ts.SyntaxKind.InKeyword]: "in",
+  [ts.SyntaxKind.PrivateKeyword]: "private",
+  [ts.SyntaxKind.ProtectedKeyword]: "protected",
+  [ts.SyntaxKind.PublicKeyword]: "public",
+  [ts.SyntaxKind.OutKeyword]: "out",
+  [ts.SyntaxKind.OverrideKeyword]: "override",
+  [ts.SyntaxKind.ReadonlyKeyword]: "readonly",
+  [ts.SyntaxKind.StaticKeyword]: "static",
+};
+
+function getPropertyModifiers(prop: ts.Symbol): string[] {
+  const declaration = prop.declarations?.[0];
+  if (!declaration || !ts.isPropertySignature(declaration)) {
+    return [];
+  }
+  const modifiers: string[] = [];
+
+  if (declaration.questionToken) {
+    modifiers.push("optional");
+  }
+
+  for (const modifier of declaration.modifiers || []) {
+    const mapped = MODIFIER_MAP[modifier.kind];
+    if (mapped) {
+      modifiers.push(mapped);
+    }
+  }
+
+  return modifiers;
 }
