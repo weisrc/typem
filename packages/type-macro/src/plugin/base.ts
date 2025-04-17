@@ -1,8 +1,16 @@
 import { transform } from "../transform";
 import { readFile } from "fs/promises";
 import ts from "typescript";
+import { BUILTIN_MAP } from "../constants";
 
-export function base(onAddModule: (name: string, code: string) => void) {
+export type TypeMacroOptions = {
+  builtins?: Record<string, string>;
+};
+
+export function base(
+  options: TypeMacroOptions,
+  onAddModule: (name: string, code: string) => void
+) {
   const program = createTsProgram();
   const modules: Record<string, string> = {};
 
@@ -13,7 +21,12 @@ export function base(onAddModule: (name: string, code: string) => void) {
 
   async function load(path: string) {
     return (
-      transform(program, addModule, path) ?? (await readFile(path, "utf-8"))
+      transform(
+        program,
+        addModule,
+        path,
+        options.builtins ?? BUILTIN_MAP
+      ) ?? (await readFile(path, "utf-8"))
     );
   }
 

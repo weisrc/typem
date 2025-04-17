@@ -5,7 +5,8 @@ type User = {
   age: number & Range<1, 100>;
   email: string & Email;
   color?: "red" | "green" | "blue";
-  test(): 123;
+  numbers: [number, number, number];
+  test(): Promise<123>;
 };
 
 const isUser = is<User>();

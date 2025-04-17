@@ -5,7 +5,8 @@ import type { AddModuleFn, TransformContext } from "./context";
 export function transform(
   program: ts.Program,
   addModule: AddModuleFn,
-  filePath: string
+  filePath: string,
+  builtins: Record<string, string>
 ): string | undefined {
   const sourceFile = program.getSourceFile(filePath);
 
@@ -17,6 +18,7 @@ export function transform(
     raw: sourceFile.getFullText(),
     checker: program.getTypeChecker(),
     addModule,
+    builtins
   };
 
   visitNode(context, sourceFile);

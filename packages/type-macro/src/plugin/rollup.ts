@@ -6,7 +6,7 @@ export type TypeMacroRollupOptions = {};
 export default function typeMacro(
   options: TypeMacroRollupOptions = {}
 ): Plugin {
-  const { load, isVirtual, loadVirtual } = base(() => {});
+  const { load, isVirtual, loadVirtual } = base(options, () => {});
 
   return {
     name: "type-macro",

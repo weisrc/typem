@@ -1,27 +1,12 @@
 import ts from "typescript";
 import { getMarker, type TransformContext } from "../context";
-import {
-  LITERAL_FALSE,
-  LITERAL_TRUE,
-  GENERAL_UNDEFINED,
-  type TypeMap,
-} from "./common";
+import { LITERAL_FALSE, LITERAL_TRUE, type TypeMap } from "./common";
 import { typeCodegen } from ".";
+import { MODIFIER_MAP } from "../../constants";
 
-export function arrayCodegen(
+export function builtinCodegen(
   context: TransformContext,
-  type: ts.Type,
-  typeMap: TypeMap
-) {
-  const [innerType] = context.checker.getTypeArguments(
-    type as ts.TypeReference
-  );
-  const inner = typeCodegen(context, innerType, typeMap);
-  return `t.array(${inner})`;
-}
-
-export function tupleCodegen(
-  context: TransformContext,
+  name: string,
   type: ts.Type,
   typeMap: TypeMap
 ) {
@@ -29,7 +14,12 @@ export function tupleCodegen(
     .getTypeArguments(type as ts.TypeReference)
     .map((t) => typeCodegen(context, t, typeMap))
     .join(", ");
-  return `t.tuple(${inner})`;
+
+  const error = `t.error(${JSON.stringify(
+    `Type "${name}" not found in builtins.`
+  )})`;
+
+  return `t.${name} ? t.${name}(${inner}) : ${error}`;
 }
 
 export function getAnnotation(context: TransformContext, type: ts.Type) {
@@ -130,24 +120,6 @@ export function objectCodegen(
 
   return `t.object({${properties.join(", ")}})`;
 }
-
-const MODIFIER_MAP: Partial<Record<ts.SyntaxKind, string>> = {
-  [ts.SyntaxKind.AbstractKeyword]: "abstract",
-  [ts.SyntaxKind.AccessorKeyword]: "accessor",
-  [ts.SyntaxKind.AsyncKeyword]: "async",
-  [ts.SyntaxKind.ConstKeyword]: "const",
-  [ts.SyntaxKind.DeclareKeyword]: "declare",
-  [ts.SyntaxKind.DefaultKeyword]: "default",
-  [ts.SyntaxKind.ExportKeyword]: "export",
-  [ts.SyntaxKind.InKeyword]: "in",
-  [ts.SyntaxKind.PrivateKeyword]: "private",
-  [ts.SyntaxKind.ProtectedKeyword]: "protected",
-  [ts.SyntaxKind.PublicKeyword]: "public",
-  [ts.SyntaxKind.OutKeyword]: "out",
-  [ts.SyntaxKind.OverrideKeyword]: "override",
-  [ts.SyntaxKind.ReadonlyKeyword]: "readonly",
-  [ts.SyntaxKind.StaticKeyword]: "static",
-};
 
 function getPropertyModifiers(prop: ts.Symbol): string[] {
   const declaration = prop.declarations?.[0];

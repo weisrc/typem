@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { getMarker, type TransformContext } from "../context";
+import { type TransformContext } from "../context";
 import { randomString } from "../name-utils";
 import {
   LITERAL_FALSE,
@@ -9,12 +9,11 @@ import {
   type TypeMap,
 } from "./common";
 import {
-  arrayCodegen,
+  builtinCodegen,
   getAnnotation,
   intersectionCodegenWithAnnotations,
   objectCodegen,
   signaturesCodegen,
-  tupleCodegen,
   unionCodegen,
 } from "./helpers";
 
@@ -62,10 +61,14 @@ function innerCodegen(
     return unionCodegen(context, type.types, typeMap);
   } else if (type.isIntersection()) {
     return intersectionCodegenWithAnnotations(context, type.types, typeMap);
-  } else if (context.checker.isArrayType(type)) {
-    return arrayCodegen(context, type, typeMap);
   } else if (context.checker.isTupleType(type)) {
-    return tupleCodegen(context, type, typeMap);
+    return builtinCodegen(context, "tuple", type, typeMap);
+  }
+
+  const qualifiedName = context.checker.getFullyQualifiedName(type.symbol);
+  const bultinName = context.builtins[qualifiedName];
+  if (bultinName) {
+    return builtinCodegen(context, bultinName, type, typeMap);
   }
 
   const annotation = getAnnotation(context, type);

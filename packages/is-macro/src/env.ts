@@ -158,5 +158,5 @@ export const env: Env<IsMacro, Is<any>> = {
   special,
   union,
   tuple,
-  callable,
+  callable
 };

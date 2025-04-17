@@ -1,3 +1,4 @@
+import type { BUILTIN_MAP, MODIFIER_MAP } from "./constants";
 import type { GeneralType, SpecialType } from "./transform/type-codegen/common";
 
 export function macro<T, P extends string>() {
@@ -23,6 +24,9 @@ export type Annotation<T extends string, U> = {
 
 export type { GeneralType, SpecialType };
 
+type BuiltinMap = typeof BUILTIN_MAP;
+type ModifierMap = typeof MODIFIER_MAP;
+
 export type Env<T, U> = {
   entry(...args: any): T;
   error(message: string): U;
@@ -31,10 +35,12 @@ export type Env<T, U> = {
   literal(value: any): U;
   optional(t: U): U;
   object(shape: { [key: string]: U }): U;
-  array(t: U): U;
-  tuple(...t: U[]): U;
   union(...t: U[]): U;
   intersection(...t: U[]): U;
   recursive(fn: (self: U) => U): U;
   callable(t: U, signatures: [U[], U][]): U;
+} & {
+  [key in BuiltinMap[keyof BuiltinMap]]?: (...t: U[]) => U;
+} & {
+  [key in ModifierMap[keyof ModifierMap]]?: (t: U) => U;
 };

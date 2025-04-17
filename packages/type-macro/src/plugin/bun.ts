@@ -1,9 +1,9 @@
 import type { BunPlugin } from "bun";
-import { base } from "./base";
+import { base, type TypeMacroOptions } from "./base";
 
-export type TypeMacroBunOptions = {
+export interface TypeMacroBunOptions extends TypeMacroOptions {
   preload?: boolean;
-};
+}
 
 export default function typeMacro(
   options: TypeMacroBunOptions = {}
@@ -20,6 +20,7 @@ export default function typeMacro(
       }
 
       const { load, isVirtual, loadVirtual } = base(
+        options,
         options.preload ? onAddModule : () => {}
       );
 

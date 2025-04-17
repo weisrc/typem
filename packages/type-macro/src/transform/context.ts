@@ -7,6 +7,7 @@ export type TransformContext = {
   raw: string;
   checker: ts.TypeChecker;
   addModule: AddModuleFn;
+  builtins: Record<string, string>;
 };
 
 export function replaceNodeText(
