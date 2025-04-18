@@ -14,7 +14,11 @@ import {
   type Pattern,
   type UniqueItems,
 } from "../src";
-import type { MaxProperties, MinProperties } from "../src/tags";
+import type {
+  AdditionalProperties,
+  MaxProperties,
+  MinProperties,
+} from "../src/tags";
 
 it("tag pattern", () => {
   const check = is<string & Pattern<"^[a-z]+$">>();
@@ -121,6 +125,18 @@ it("tag maxProperties", () => {
 
   expect(check({ a: 1, b: 2 })).toBe(true);
   expect(check({ a: 1, b: 2, c: 3 })).toBe(false);
+});
+
+it("tag additionalProperties", () => {
+  const check1 = is<{ a: number }>();
+  const check2 = is<{ a: number } & AdditionalProperties>();
+
+  expect(check1({ a: 1, b: 2 })).toBe(false);
+  expect(check2({ a: 1, b: 2 })).toBe(true);
+  expect(check1({ a: 1 })).toBe(true);
+  expect(check2({ a: 1 })).toBe(true);
+  expect(check1({})).toBe(false);
+  expect(check2({})).toBe(false);
 });
 
 it("tag minimum and exclusiveMaximum", () => {
