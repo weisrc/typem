@@ -1,6 +1,11 @@
-import { Email, Range } from ".";
-import { Is, IsMacro } from "./types";
-import { AnnotationFunction, Env, GeneralType, SpecialType } from "type-macro";
+import type { Email, Range } from ".";
+import type { Is, IsMacro } from "./types";
+import type {
+  AnnotationFunction,
+  Env,
+  GeneralType,
+  SpecialType,
+} from "type-macro";
 
 export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
@@ -40,14 +45,25 @@ export function optional<T>(type: Is<T>) {
   }) as Is<T>;
 }
 
-export function object<T extends object>(shape: {
-  [key in keyof T]: Is<T[key]>;
-}): Is<T> {
+export function object<T extends object>(
+  shape: {
+    [key in keyof T]: Is<T[key]>;
+  },
+  required: string[]
+): Is<T> {
   return ((x: any) => {
     if (typeof x !== "object" || x === null) {
       return false;
     }
+    for (const key of required) {
+      if (!(key in x)) {
+        return false;
+      }
+    }
     for (const key in shape) {
+      if (!(key in x)) {
+        continue;
+      }
       if (!shape[key](x[key])) {
         return false;
       }
@@ -92,12 +108,27 @@ export function intersection<T>(...types: Is<T>[]): Is<T> {
   }) as Is<T>;
 }
 
+const verified = new WeakMap<Is<any>, WeakSet<any>>();
+
 export function recursive<T>(fn: (self: Is<T>) => Is<T>): Is<T> {
   let type: Is<T>;
-  const isType = (x: any) => {
+  const inner = (x: any) => {
+    if (verified.has(type)) {
+      const set = verified.get(type)!;
+      if (set.has(x)) {
+        return true;
+      }
+    }
+
+    if (!verified.has(type)) {
+      verified.set(type, new WeakSet());
+    }
+    const set = verified.get(type)!;
+    set.add(x);
+
     return type(x);
   };
-  type = fn(isType);
+  type = fn(inner as Is<T>);
   return type;
 }
 
@@ -153,10 +184,9 @@ export const env: Env<IsMacro, Is<any>> = {
   intersection,
   literal,
   object,
-  optional,
   recursive,
   special,
   union,
   tuple,
-  callable
+  callable,
 };

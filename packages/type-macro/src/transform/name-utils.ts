@@ -3,11 +3,12 @@ import ts from "typescript";
 export function uniqueSymbol(
   length: number,
   sourceFile: ts.SourceFile,
-  checker: ts.TypeChecker
+  checker: ts.TypeChecker,
+  reserved: readonly string[]
 ) {
   while (true) {
     const name = randomString(length);
-    if (isSymbolFree(name, sourceFile, checker)) {
+    if (isSymbolFree(name, sourceFile, checker) && !reserved.includes(name)) {
       return name;
     }
   }
@@ -36,9 +37,11 @@ export function isSymbolFree(
   return !symbols.some((symbol) => symbol.getName() === name);
 }
 
+let counter = 0;
+
 export function randomCharacter() {
   const lower = "abcdefghijklmnopqrstuvwxyz";
   const upper = lower.toUpperCase();
   const chars = lower + upper;
-  return chars[Math.floor(Math.random() * chars.length)];
+  return chars[counter++ % chars.length];
 }

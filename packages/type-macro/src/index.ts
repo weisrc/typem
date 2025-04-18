@@ -33,8 +33,7 @@ export type Env<T, U> = {
   general(type: GeneralType): U;
   special(type: SpecialType): U;
   literal(value: any): U;
-  optional(t: U): U;
-  object(shape: { [key: string]: U }): U;
+  object(shape: { [key: string]: U }, required: string[]): U;
   union(...t: U[]): U;
   intersection(...t: U[]): U;
   recursive(fn: (self: U) => U): U;

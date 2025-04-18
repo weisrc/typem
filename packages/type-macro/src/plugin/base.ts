@@ -1,10 +1,11 @@
 import { transform } from "../transform";
 import { readFile } from "fs/promises";
 import ts from "typescript";
-import { BUILTIN_MAP } from "../constants";
+import { BUILTIN_MAP, RESERVED_WORDS } from "../constants";
 
 export type TypeMacroOptions = {
   builtins?: Record<string, string>;
+  reservedWords?: string[];
 };
 
 export function base(
@@ -25,7 +26,8 @@ export function base(
         program,
         addModule,
         path,
-        options.builtins ?? BUILTIN_MAP
+        options.builtins ?? BUILTIN_MAP,
+        options.reservedWords ?? RESERVED_WORDS
       ) ?? (await readFile(path, "utf-8"))
     );
   }
@@ -65,11 +67,14 @@ function createTsProgram() {
       )
     : null;
 
-  if (!config) {
-    throw new Error("Could not parse tsconfig.json");
+  if (config) {
+    return ts.createProgram(config.fileNames, config.options);
   }
 
-  const program = ts.createProgram(config.fileNames, config.options);
-
-  return program;
+  console.warn("tsconfig.json not found, using default TypeScript options.");
+  const defaultOptions: ts.CompilerOptions = {
+    target: ts.ScriptTarget.ESNext,
+    module: ts.ModuleKind.CommonJS,
+  };
+  return ts.createProgram([], defaultOptions);
 }

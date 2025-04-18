@@ -106,10 +106,17 @@ export function objectCodegen(
   type: ts.Type,
   typeMap: TypeMap
 ) {
+  const requiredProperties: string[] = [];
+
   const properties = type.getProperties().map((prop) => {
     const propType = context.checker.getTypeOfSymbol(prop);
-    let inner = typeCodegen(context, propType, typeMap);
-    const modifiers = getPropertyModifiers(prop);
+    const [required, modifiers] = getPropertyModifiers(prop);
+
+    if (required) {
+      requiredProperties.push(prop.name);
+    }
+
+    let inner = objectPropCodegen(context, propType, typeMap, required);
 
     for (const modifier of modifiers) {
       inner = `(t.${modifier} ?? (x => x))(${inner})`;
@@ -118,26 +125,59 @@ export function objectCodegen(
     return `${JSON.stringify(prop.name)}: ${inner}`;
   });
 
-  return `t.object({${properties.join(", ")}})`;
+  return `t.object({${properties.join(", ")}}, ${JSON.stringify(
+    requiredProperties
+  )})`;
 }
 
-function getPropertyModifiers(prop: ts.Symbol): string[] {
+function getPropertyModifiers(prop: ts.Symbol): [boolean, string[]] {
   const declaration = prop.declarations?.[0];
   if (!declaration || !ts.isPropertySignature(declaration)) {
-    return [];
-  }
-  const modifiers: string[] = [];
-
-  if (declaration.questionToken) {
-    modifiers.push("optional");
+    return [true, []];
   }
 
-  for (const modifier of declaration.modifiers || []) {
-    const mapped = MODIFIER_MAP[modifier.kind];
-    if (mapped) {
-      modifiers.push(mapped);
-    }
+  const modifiers: string[] =
+    declaration.modifiers?.map((modifier) => MODIFIER_MAP[modifier.kind]) ?? [];
+
+  return [!declaration.questionToken, modifiers];
+}
+
+function hasExplictUndefined(
+  context: TransformContext,
+  type: ts.Type
+): boolean {
+  if (!type.isUnion()) {
+    return false;
   }
 
-  return modifiers;
+  const declaration = type.symbol?.declarations?.[0];
+  if (!declaration || !ts.isUnionTypeNode(declaration)) {
+    return false;
+  }
+  const types = declaration.types.map((t) =>
+    context.checker.getTypeAtLocation(t)
+  );
+  return types.some((t) => t.flags & ts.TypeFlags.Undefined);
+}
+
+function objectPropCodegen(
+  context: TransformContext,
+  type: ts.Type,
+  typeMap: TypeMap,
+  required: boolean
+) {
+  if (
+    required ||
+    !type.isUnion() ||
+    !context.options.exactOptionalPropertyTypes ||
+    hasExplictUndefined(context, type)
+  ) {
+    return typeCodegen(context, type, typeMap);
+  }
+
+  const filtered = type.types.filter(
+    (t) => !(t.flags & ts.TypeFlags.Undefined)
+  );
+
+  return unionCodegen(context, filtered, typeMap);
 }

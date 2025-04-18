@@ -6,7 +6,8 @@ export function transform(
   program: ts.Program,
   addModule: AddModuleFn,
   filePath: string,
-  builtins: Record<string, string>
+  builtins: Record<string, string>,
+  reservedWords: readonly string[]
 ): string | undefined {
   const sourceFile = program.getSourceFile(filePath);
 
@@ -17,8 +18,10 @@ export function transform(
   const context: TransformContext = {
     raw: sourceFile.getFullText(),
     checker: program.getTypeChecker(),
+    options: program.getCompilerOptions(),
     addModule,
-    builtins
+    builtins,
+    reservedWords,
   };
 
   visitNode(context, sourceFile);

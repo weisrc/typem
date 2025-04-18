@@ -55,6 +55,8 @@ function innerCodegen(
     return LITERAL_TRUE;
   } else if (typeName == "false") {
     return LITERAL_FALSE;
+  } else if (typeName === "null") {
+    return `t.literal(null)`;
   } else if (type.isLiteral()) {
     return `t.literal(${JSON.stringify(type.value)})`;
   } else if (type.isUnion()) {

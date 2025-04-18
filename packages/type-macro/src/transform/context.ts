@@ -6,8 +6,10 @@ export type AddModuleFn = (name: string, code: string) => void;
 export type TransformContext = {
   raw: string;
   checker: ts.TypeChecker;
+  options: ts.CompilerOptions;
   addModule: AddModuleFn;
   builtins: Record<string, string>;
+  reservedWords: readonly string[];
 };
 
 export function replaceNodeText(
@@ -67,7 +69,8 @@ export function augmentNode(
   const id = uniqueSymbol(
     node.getText().length,
     node.getSourceFile(),
-    context.checker
+    context.checker,
+    context.reservedWords
   );
 
   replaceNodeText(context, node, id);
