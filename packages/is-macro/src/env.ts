@@ -1,11 +1,6 @@
-import type { Email, Range } from ".";
-import type { Is, IsMacro } from "./types";
-import type {
-  AnnotationFunction,
-  Env,
-  GeneralType,
-  SpecialType,
-} from "type-macro";
+import type { Env, GeneralType, SpecialType } from "type-macro";
+import type { Is, IsMacro } from ".";
+export * from "./tags";
 
 export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
@@ -149,32 +144,6 @@ export function tuple<T extends any[]>(...types: Is<T[number]>[]): Is<T> {
 export function callable(): Is<never> {
   throw new Error("Cannot validate callable types");
 }
-
-export const email: AnnotationFunction<Email, Is<string>> = (inner) => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return ((x: any) => {
-    if (!inner(x)) {
-      return false;
-    }
-    return regex.test(x);
-  }) as Is<string>;
-};
-
-export const range: AnnotationFunction<Range<number, number>, Is<number>> = (
-  inner,
-  param
-) => {
-  const [min, max] = param;
-  return ((x: any) => {
-    if (!inner(x)) {
-      return false;
-    }
-    if (x < min || x > max) {
-      return false;
-    }
-    return true;
-  }) as Is<number>;
-};
 
 export const env: Env<IsMacro, Is<any>> = {
   entry,

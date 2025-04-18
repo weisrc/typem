@@ -22,24 +22,24 @@ export function builtinCodegen(
   return `t.${name} ? t.${name}(${inner}) : ${error}`;
 }
 
-export function getAnnotation(context: TransformContext, type: ts.Type) {
-  return getMarker(context, type, "__annotation");
+export function getTag(context: TransformContext, type: ts.Type) {
+  return getMarker(context, type, "__tag");
 }
 
-export function splitAnnotations(context: TransformContext, types: ts.Type[]) {
-  const annotations: Record<string, any> = {};
+export function splitTags(context: TransformContext, types: ts.Type[]) {
+  const tags: Record<string, any> = {};
   const rest: ts.Type[] = [];
 
   for (const type of types) {
-    const annotation = getAnnotation(context, type);
-    if (annotation) {
-      Object.assign(annotations, annotation);
+    const tag = getTag(context, type);
+    if (tag) {
+      Object.assign(tags, tag);
     } else {
       rest.push(type);
     }
   }
 
-  return { annotations, rest };
+  return { tags, rest };
 }
 
 export function signaturesCodegen(
@@ -61,15 +61,15 @@ export function signaturesCodegen(
   return `[${out}]`;
 }
 
-export function intersectionCodegenWithAnnotations(
+export function intersectionCodegenWithTags(
   context: TransformContext,
   types: ts.Type[],
   typeMap: TypeMap
 ) {
-  const { annotations, rest } = splitAnnotations(context, types);
+  const { tags, rest } = splitTags(context, types);
   let out = intersectionCodegen(context, rest, typeMap);
 
-  for (const [key, value] of Object.entries(annotations)) {
+  for (const [key, value] of Object.entries(tags)) {
     out = `(t.${key} ?? (x => x))(${out}, ${JSON.stringify(value)})`;
   }
 

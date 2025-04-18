@@ -1,11 +1,20 @@
-import { macro, type Annotation } from "type-macro";
-import type { IsMacro } from "./types";
+import { macro } from "type-macro";
 
 export const is = macro<IsMacro, "is-macro/env">();
+export type Is<T> = (x: any) => x is T;
+export type IsMacro = <T>() => Is<T>;
 
-export type Email = Annotation<"email", []>;
-
-export type Range<Min extends number, Max extends number> = Annotation<
-  "range",
-  [Min, Max]
->;
+export type {
+  ExclusiveMaximum,
+  ExclusiveMinimum,
+  Format,
+  MaxItems,
+  MaxLength,
+  Maximum,
+  MinItems,
+  MinLength,
+  Minimum,
+  MultipleOf,
+  Pattern,
+  UniqueItems,
+} from "./tags";

@@ -10,8 +10,8 @@ import {
 } from "./common";
 import {
   builtinCodegen,
-  getAnnotation,
-  intersectionCodegenWithAnnotations,
+  getTag,
+  intersectionCodegenWithTags,
   objectCodegen,
   signaturesCodegen,
   unionCodegen,
@@ -62,7 +62,7 @@ function innerCodegen(
   } else if (type.isUnion()) {
     return unionCodegen(context, type.types, typeMap);
   } else if (type.isIntersection()) {
-    return intersectionCodegenWithAnnotations(context, type.types, typeMap);
+    return intersectionCodegenWithTags(context, type.types, typeMap);
   } else if (context.checker.isTupleType(type)) {
     return builtinCodegen(context, "tuple", type, typeMap);
   }
@@ -73,9 +73,9 @@ function innerCodegen(
     return builtinCodegen(context, bultinName, type, typeMap);
   }
 
-  const annotation = getAnnotation(context, type);
-  if (annotation) {
-    return `t.error("annotation not in intersection")`;
+  const tag = getTag(context, type);
+  if (tag) {
+    return `t.error("tag not in intersection")`;
   }
 
   const object = objectCodegen(context, type, typeMap);

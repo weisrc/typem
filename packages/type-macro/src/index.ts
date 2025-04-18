@@ -9,15 +9,15 @@ export function macro<T, P extends string>() {
   };
 }
 
-export type AnnotationFunction<T extends Annotation<string, any>, U> = (
+export type TagFunction<T extends Tag<string, any>, U> = (
   inner: U,
-  param: GetAnnotationParam<T>
+  param: GetTagParam<T>
 ) => U;
 
-type GetAnnotationParam<T> = T extends Annotation<string, infer U> ? U : never;
+type GetTagParam<T> = T extends Tag<string, infer U> ? U : never;
 
-export type Annotation<T extends string, U> = {
-  __annotation?: {
+export type Tag<T extends string, U> = {
+  __tag?: {
     [key in T]: U;
   };
 };
