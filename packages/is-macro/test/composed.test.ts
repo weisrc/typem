@@ -1,55 +1,89 @@
 import { it, expect } from "bun:test";
 
 import { is } from "../src";
+import type { AdditionalProperties } from "../src/tags";
 
 it("should validate objects", () => {
-  const isObject = is<{ name: string; age: number }>();
+  const check = is<{ name: string; age: number }>();
 
-  expect(isObject({ name: "John", age: 30 })).toBe(true);
-  expect(isObject({ name: "John" })).toBe(false);
-  expect(isObject({ age: 30 })).toBe(false);
-  expect(isObject({ name: "John", age: "30" })).toBe(false);
-  expect(isObject("John")).toBe(false);
+  expect(check({ name: "John", age: 30 })).toBe(true);
+  expect(check({ name: "John" })).toBe(false);
+  expect(check({ age: 30 })).toBe(false);
+  expect(check({ name: "John", age: "30" })).toBe(false);
+  expect(check("John")).toBe(false);
 });
 
 it("should validate arrays", () => {
-  const isArray = is<number[]>();
+  const check = is<number[]>();
 
-  expect(isArray([1, 2, 3])).toBe(true);
-  expect(isArray([1, "2", 3])).toBe(false);
-  expect(isArray("123")).toBe(false);
+  expect(check([1, 2, 3])).toBe(true);
+  expect(check([1, "2", 3])).toBe(false);
+  expect(check("123")).toBe(false);
 });
 
 it("should validate tuples", () => {
-  const isTuple = is<[number, string]>();
+  const check = is<[number, string]>();
 
-  expect(isTuple([1, "2"])).toBe(true);
-  expect(isTuple([1, 2])).toBe(false);
-  expect(isTuple([1])).toBe(false);
-  expect(isTuple("123")).toBe(false);
+  expect(check([1, "2"])).toBe(true);
+  expect(check([1, 2])).toBe(false);
+  expect(check([1])).toBe(false);
+  expect(check("123")).toBe(false);
 });
 
 it("should validate unions", () => {
-  const isUnion = is<number | string>();
+  const check = is<number | string>();
 
-  expect(isUnion(123)).toBe(true);
-  expect(isUnion("123")).toBe(true);
-  expect(isUnion(true)).toBe(false);
+  expect(check(123)).toBe(true);
+  expect(check("123")).toBe(true);
+  expect(check(true)).toBe(false);
 });
 
 it("should validate intersections", () => {
-  const isIntersection = is<{ name: string } & { age: number }>();
+  const check = is<{ name: string } & { age: number }>();
 
-  expect(isIntersection({ name: "John", age: 30 })).toBe(true);
-  expect(isIntersection({ name: "John" })).toBe(false);
-  expect(isIntersection({ age: 30 })).toBe(false);
-  expect(isIntersection("John")).toBe(false);
+  expect(check({ name: "John", age: 30 })).toBe(true);
+  expect(check({ name: "John" })).toBe(false);
+  expect(check({ age: 30 })).toBe(false);
+  expect(check("John")).toBe(false);
 });
 
 it("should validate optional properties", () => {
-  const isOptional = is<{ name: string; age?: number }>();
+  const check = is<{ name: string; age?: number }>();
 
-  expect(isOptional({ name: "John" })).toBe(true);
-  expect(isOptional({ name: "John", age: undefined })).toBe(false);
-  expect(isOptional({ age: 30 })).toBe(false);
+  expect(check({ name: "John" })).toBe(true);
+  expect(check({ name: "John", age: undefined })).toBe(false);
+  expect(check({ age: 30 })).toBe(false);
+});
+
+it("should validate discriminated unions", () => {
+  type Dog = { type: "dog"; name: string };
+  type Cat = { type: "cat"; age: number };
+  type Pet = Dog | Cat;
+
+  const check = is<Pet>();
+  expect(check({ type: "dog", name: "Rex" })).toBe(true);
+  expect(check({ type: "cat", age: 5 })).toBe(true);
+  expect(check({ type: "dog", age: 5 })).toBe(false);
+  expect(check({ type: "cat", name: "Rex" })).toBe(false);
+  expect(check({ type: "bird" })).toBe(false);
+  expect(check({})).toBe(false);
+  expect(check({ type: "dog" })).toBe(false);
+});
+
+it("should validate record types", () => {
+  const check = is<Record<string, number>>();
+
+  expect(check({ a: 1, b: 2 })).toBe(true);
+  expect(check({ a: "1", b: 2 })).toBe(false);
+  expect(check({ a: 1, b: "2" })).toBe(false);
+  expect(check("123")).toBe(false);
+});
+
+it("should validate record types", () => {
+  const check = is<Record<string, number>>();
+
+  expect(check({ a: 1, b: 2 })).toBe(true);
+  expect(check({ a: "1", b: 2 })).toBe(false);
+  expect(check({ a: 1, b: "2" })).toBe(false);
+  expect(check("123")).toBe(false);
 });

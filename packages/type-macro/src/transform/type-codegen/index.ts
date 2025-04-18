@@ -12,10 +12,10 @@ import {
   builtinCodegen,
   getTag,
   intersectionCodegenWithTags,
-  objectCodegen,
   signaturesCodegen,
-  unionCodegen,
 } from "./helpers";
+import { unionCodegen } from "./union";
+import { objectCodegen } from "./object";
 
 export function typeCodegen(
   context: TransformContext,
@@ -76,6 +76,19 @@ function innerCodegen(
   const tag = getTag(context, type);
   if (tag) {
     return `t.error("tag not in intersection")`;
+  }
+
+  const indexInfos = context.checker.getIndexInfosOfType(type);
+
+  if (indexInfos.length > 0) {
+    if (indexInfos.length !== 1) {
+      return `t.error("multiple index signatures")`;
+    }
+    const keyType = indexInfos[0].keyType;
+    const valueType = indexInfos[0].type;
+    const key = typeCodegen(context, keyType, typeMap);
+    const value = typeCodegen(context, valueType, typeMap);
+    return `t.record(${key}, ${value})`;
   }
 
   const object = objectCodegen(context, type, typeMap);

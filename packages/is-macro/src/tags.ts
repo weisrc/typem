@@ -1,6 +1,7 @@
 import type { Tag, TagFunction } from "type-macro";
 import { FORMAT_REGEX_MAP } from "./formats";
 import type { Is } from ".";
+import { context } from "./env";
 
 function makePredicate<T>(inner: Is<T>, predicate: (x: any) => boolean): Is<T> {
   return ((x: any) => {
@@ -103,4 +104,41 @@ export const maxItems: TagFunction<MaxItems<number>, Is<any[]>> = (
   maxItems
 ) => {
   return makePredicate(inner, (x) => x.length <= maxItems);
+};
+
+export type AdditionalProperties = Tag<"additionalProperties", true>;
+export const additionalProperties: TagFunction<
+  AdditionalProperties,
+  Is<any>
+> = (inner) => {
+  const output = (x: any) => {
+    const previous = context.additionalProperties;
+    context.additionalProperties = true;
+    const result = inner(x);
+    context.additionalProperties = previous;
+    return result;
+  };
+  return output as Is<any>;
+};
+
+export type MinProperties<T extends number> = Tag<"minProperties", T>;
+export const minProperties: TagFunction<MinProperties<number>, Is<any>> = (
+  inner,
+  minProperties
+) => {
+  return additionalProperties(
+    makePredicate(inner, (x) => Object.keys(x).length >= minProperties),
+    true
+  );
+};
+
+export type MaxProperties<T extends number> = Tag<"maxProperties", T>;
+export const maxProperties: TagFunction<MaxProperties<number>, Is<any>> = (
+  inner,
+  maxProperties
+) => {
+  return additionalProperties(
+    makePredicate(inner, (x) => Object.keys(x).length <= maxProperties),
+    true
+  );
 };

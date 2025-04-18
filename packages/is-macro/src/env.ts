@@ -1,6 +1,11 @@
 import type { Env, GeneralType, SpecialType } from "type-macro";
 import type { Is, IsMacro } from ".";
+import { additionalProperties } from "./tags";
 export * from "./tags";
+
+export const context = {
+  additionalProperties: false,
+};
 
 export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
@@ -55,6 +60,13 @@ export function object<T extends object>(
         return false;
       }
     }
+    if (!context.additionalProperties) {
+      for (const key in x) {
+        if (!(key in shape)) {
+          return false;
+        }
+      }
+    }
     for (const key in shape) {
       if (!(key in x)) {
         continue;
@@ -81,7 +93,7 @@ export function array<T>(type: Is<T>): Is<T[]> {
   }) as Is<T[]>;
 }
 
-export function union<T>(...types: Is<T>[]): Is<T> {
+export function union<T>(types: Is<T>[]): Is<T> {
   return ((x: any) => {
     for (const type of types) {
       if (type(x)) {
@@ -92,33 +104,56 @@ export function union<T>(...types: Is<T>[]): Is<T> {
   }) as Is<T>;
 }
 
-export function intersection<T>(...types: Is<T>[]): Is<T> {
+export function discriminatedUnion<T>(
+  path: string,
+  values: any[],
+  types: Is<T>[]
+): Is<T> {
+  const map = new Map<any, Is<T>>();
+  for (let i = 0; i < types.length; i++) {
+    map.set(values[i], types[i]);
+  }
+
   return ((x: any) => {
+    if (typeof x !== "object" || x === null) {
+      return false;
+    }
+    const type = map.get(x[path]);
+    if (!type) {
+      return false;
+    }
+    return type(x);
+  }) as Is<T>;
+}
+
+export function intersection<T>(types: Is<T>[]): Is<T> {
+  const inner = (x: any) => {
     for (const type of types) {
       if (!type(x)) {
         return false;
       }
     }
     return true;
-  }) as Is<T>;
+  };
+  return additionalProperties(inner as Is<any>, true) as Is<T>;
 }
 
-const verified = new WeakMap<Is<any>, WeakSet<any>>();
+const visited = new WeakMap<Is<any>, WeakSet<any>>();
 
 export function recursive<T>(fn: (self: Is<T>) => Is<T>): Is<T> {
   let type: Is<T>;
   const inner = (x: any) => {
-    if (verified.has(type)) {
-      const set = verified.get(type)!;
+    if (visited.has(type)) {
+      const set = visited.get(type)!;
       if (set.has(x)) {
         return true;
       }
     }
 
-    if (!verified.has(type)) {
-      verified.set(type, new WeakSet());
+    if (!visited.has(type)) {
+      visited.set(type, new WeakSet());
     }
-    const set = verified.get(type)!;
+    const set = visited.get(type)!;
     set.add(x);
 
     return type(x);
@@ -145,17 +180,39 @@ export function callable(): Is<never> {
   throw new Error("Cannot validate callable types");
 }
 
+export function record<K extends string, V>(
+  key: Is<K>,
+  value: Is<V>
+): Is<Record<K, V>> {
+  return ((x: any) => {
+    if (typeof x !== "object" || x === null) {
+      return false;
+    }
+    for (const k in x) {
+      if (!key(k)) {
+        return false;
+      }
+      if (!value(x[k])) {
+        return false;
+      }
+    }
+    return true;
+  }) as Is<Record<K, V>>;
+}
+
 export const env: Env<IsMacro, Is<any>> = {
   entry,
   error,
   array,
   general,
+  record,
   intersection,
   literal,
   object,
   recursive,
   special,
   union,
+  discriminatedUnion,
   tuple,
   callable,
 };

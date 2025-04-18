@@ -32,10 +32,12 @@ export type Env<T, U> = {
   error(message: string): U;
   general(type: GeneralType): U;
   special(type: SpecialType): U;
+  record(key: U, value: U): U;
   literal(value: any): U;
   object(shape: { [key: string]: U }, required: string[]): U;
-  union(...t: U[]): U;
-  intersection(...t: U[]): U;
+  union(t: U[]): U;
+  discriminatedUnion(path: string, values: any[], t: U[]): U;
+  intersection(t: U[]): U;
   recursive(fn: (self: U) => U): U;
   callable(t: U, signatures: [U[], U][]): U;
 } & {
