@@ -1,4 +1,4 @@
-import { is, type Format } from "is-macro";
+import { is, type Format } from "type-schema";
 
 type A = { type: "dog"; name: string } | { type: "cat"; age: number };
 

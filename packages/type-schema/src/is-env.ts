@@ -1,6 +1,6 @@
 import type { Env, GeneralType, SpecialType } from "type-macro";
 import type { Is, IsMacro } from ".";
-import { additionalProperties } from "./tags";
+import { additionalProperties } from "./is-tags";
 import {
   context,
   errorPathPop,
@@ -8,7 +8,7 @@ import {
   errorAdd,
   errorClear,
 } from "./context";
-export * from "./tags";
+export * from "./is-tags";
 
 export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
@@ -217,7 +217,9 @@ export function record<K extends string, V>(
     }
     for (const k in x) {
       errorPathPush(k);
+      errorPathPush(true);
       const keyOk = key(k);
+      errorPathPop();
       errorPathPop();
 
       if (!keyOk) {

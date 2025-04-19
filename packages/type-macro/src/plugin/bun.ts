@@ -9,7 +9,7 @@ export default function typeMacro(
   options: TypeMacroBunOptions = {}
 ): BunPlugin {
   return {
-    name: "type-macro",
+    name: "@garejs/macro",
     async setup(build) {
       function onAddModule(name: string, code: string) {
         build.module(name, () => {

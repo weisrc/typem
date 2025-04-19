@@ -1,7 +1,7 @@
 export type Context = {
   additionalProperties: boolean;
   enableErrors: boolean;
-  path: (string | number)[];
+  path: (string | number | boolean)[];
   errors: ValidationError[];
 };
 
@@ -35,10 +35,11 @@ export type ValidationErrorType =
 export type ValidationError = {
   type: ValidationErrorType;
   target: any;
-  path: (string | number)[];
+  path: (string | number | boolean)[];
+  key?: true;
 };
 
-export function errorPathPush(part: string | number) {
+export function errorPathPush(part: string | number | boolean) {
   if (context.enableErrors) {
     context.path.push(part);
   }

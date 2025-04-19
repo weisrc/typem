@@ -9,7 +9,7 @@ export default function typeMacro(
   const { load, isVirtual, loadVirtual } = base(options, () => {});
 
   return {
-    name: "type-macro",
+    name: "@garejs/macro",
 
     async resolveId(source) {
       if (isVirtual(source)) {

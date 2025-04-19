@@ -1,6 +1,6 @@
 import { it, expect } from "bun:test";
 
-import { is } from "../src";
+import { getErrors, is, withErrors } from "../src";
 
 it("should validate 1-cycle", () => {
   type Tree = {
@@ -9,7 +9,7 @@ it("should validate 1-cycle", () => {
     right?: Tree;
   };
 
-  const isTree = is<Tree>();
+  const isTree = withErrors(is<Tree>());
   expect(isTree({ value: 1 })).toBe(true);
   expect(isTree({ value: 1, left: { value: 2 } })).toBe(true);
   expect(isTree({ value: 1, left: { value: 2, left: { value: 3 } } })).toBe(
@@ -18,6 +18,13 @@ it("should validate 1-cycle", () => {
   expect(isTree({ value: 1, left: { value: 2, left: { value: "3" } } })).toBe(
     false
   );
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-type",
+      target: "number",
+      path: ["left", "left", "value"],
+    },
+  ]);
   expect(
     isTree({
       value: 1,
@@ -90,7 +97,7 @@ it("should fail for bad recursive data", () => {
     next?: A;
   };
 
-  const isA = is<A>();
+  const isA = withErrors(is<A>());
 
   let a: A = { value: "1" as unknown as number };
   let b: B = { value: "2" };
@@ -98,4 +105,11 @@ it("should fail for bad recursive data", () => {
   b.next = a;
 
   expect(isA(a)).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-type",
+      target: "number",
+      path: ["value"],
+    },
+  ]);
 });

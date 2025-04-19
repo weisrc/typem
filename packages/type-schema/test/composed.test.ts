@@ -133,11 +133,23 @@ it("should validate record types", () => {
   expect(getErrors()).toEqual([]);
 
   expect(check({ a: "1", b: 2 })).toBe(false);
-  expect(getErrors()).toEqual([]);
-  
-  expect(check({ a: 1, b: "2" })).toBe(false);
-  expect(getErrors()).toEqual([]);
-  
+  expect(getErrors()).toEqual([
+    {
+      path: ["a", true],
+      target: "email",
+      type: "invalid-format",
+    },
+  ]);
+
+  expect(check({ "john@example.org": "no" })).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-type",
+      target: "number",
+      path: ["john@example.org"],
+    },
+  ]);
+
   expect(check("123")).toBe(false);
   expect(getErrors()).toEqual([
     {

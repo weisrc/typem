@@ -1,7 +1,24 @@
-import type { Tag, TagFunction } from "type-macro";
-import { FORMAT_REGEX_MAP } from "./formats";
-import type { Is } from ".";
+import type { TagHandler } from "type-macro";
+import type {
+  AdditionalProperties,
+  ExclusiveMaximum,
+  ExclusiveMinimum,
+  Format,
+  Is,
+  Maximum,
+  MaxItems,
+  MaxLength,
+  MaxProperties,
+  Minimum,
+  MinItems,
+  MinLength,
+  MinProperties,
+  MultipleOf,
+  Pattern,
+  UniqueItems,
+} from ".";
 import { context, errorAdd, type ValidationErrorType } from "./context";
+import { FORMAT_REGEX_MAP } from "./formats";
 
 function makePredicate<T>(
   inner: Is<T>,
@@ -21,11 +38,7 @@ function makePredicate<T>(
   }) as Is<T>;
 }
 
-export type Pattern<Name extends string, Regex extends string> = Tag<
-  "pattern",
-  [Name, Regex]
->;
-export const pattern: TagFunction<Pattern<string, string>, Is<string>> = (
+export const pattern: TagHandler<Pattern<string, string>, Is<string>> = (
   inner,
   [name, source]
 ) => {
@@ -33,31 +46,27 @@ export const pattern: TagFunction<Pattern<string, string>, Is<string>> = (
   return makePredicate(inner, "invalid-format", name, (x) => regex.test(x));
 };
 
-export type Format<T extends keyof typeof FORMAT_REGEX_MAP> = Tag<"format", T>;
-export const format: TagFunction<
+export const format: TagHandler<
   Format<keyof typeof FORMAT_REGEX_MAP>,
   Is<string>
 > = (inner, format) =>
   pattern(inner, [format, FORMAT_REGEX_MAP[format].source]);
 
-export type Minimum<T extends number> = Tag<"minimum", T>;
-export const minimum: TagFunction<Minimum<number>, Is<number>> = (
+export const minimum: TagHandler<Minimum<number>, Is<number>> = (
   inner,
   minimum
 ) => {
   return makePredicate(inner, "minimum", minimum, (x) => x >= minimum);
 };
 
-export type Maximum<T extends number> = Tag<"maximum", T>;
-export const maximum: TagFunction<Maximum<number>, Is<number>> = (
+export const maximum: TagHandler<Maximum<number>, Is<number>> = (
   inner,
   maximum
 ) => {
   return makePredicate(inner, "maximum", maximum, (x) => x <= maximum);
 };
 
-export type ExclusiveMinimum<T extends number> = Tag<"exclusiveMinimum", T>;
-export const exclusiveMinimum: TagFunction<
+export const exclusiveMinimum: TagHandler<
   ExclusiveMinimum<number>,
   Is<number>
 > = (inner, exclusiveMinimum) => {
@@ -69,8 +78,7 @@ export const exclusiveMinimum: TagFunction<
   );
 };
 
-export type ExclusiveMaximum<T extends number> = Tag<"exclusiveMaximum", T>;
-export const exclusiveMaximum: TagFunction<
+export const exclusiveMaximum: TagHandler<
   ExclusiveMaximum<number>,
   Is<number>
 > = (inner, exclusiveMaximum) => {
@@ -82,8 +90,7 @@ export const exclusiveMaximum: TagFunction<
   );
 };
 
-export type MultipleOf<T extends number> = Tag<"multipleOf", T>;
-export const multipleOf: TagFunction<MultipleOf<number>, Is<number>> = (
+export const multipleOf: TagHandler<MultipleOf<number>, Is<number>> = (
   inner,
   multipleOf
 ) => {
@@ -95,16 +102,14 @@ export const multipleOf: TagFunction<MultipleOf<number>, Is<number>> = (
   );
 };
 
-export type UniqueItems = Tag<"uniqueItems", true>;
-export const uniqueItems: TagFunction<UniqueItems, Is<any[]>> = (inner) => {
+export const uniqueItems: TagHandler<UniqueItems, Is<any[]>> = (inner) => {
   return makePredicate(inner, "unique-items", undefined, (x) => {
     const set = new Set(x);
     return set.size === x.length;
   });
 };
 
-export type MaxLength<T extends number> = Tag<"maxLength", T>;
-export const maxLength: TagFunction<MaxLength<number>, Is<string>> = (
+export const maxLength: TagHandler<MaxLength<number>, Is<string>> = (
   inner,
   maxLength
 ) => {
@@ -116,8 +121,7 @@ export const maxLength: TagFunction<MaxLength<number>, Is<string>> = (
   );
 };
 
-export type MinLength<T extends number> = Tag<"minLength", T>;
-export const minLength: TagFunction<MinLength<number>, Is<string>> = (
+export const minLength: TagHandler<MinLength<number>, Is<string>> = (
   inner,
   minLength
 ) => {
@@ -129,8 +133,7 @@ export const minLength: TagFunction<MinLength<number>, Is<string>> = (
   );
 };
 
-export type MinItems<T extends number> = Tag<"minItems", T>;
-export const minItems: TagFunction<MinItems<number>, Is<any[]>> = (
+export const minItems: TagHandler<MinItems<number>, Is<any[]>> = (
   inner,
   minItems
 ) => {
@@ -142,8 +145,7 @@ export const minItems: TagFunction<MinItems<number>, Is<any[]>> = (
   );
 };
 
-export type MaxItems<T extends number> = Tag<"maxItems", T>;
-export const maxItems: TagFunction<MaxItems<number>, Is<any[]>> = (
+export const maxItems: TagHandler<MaxItems<number>, Is<any[]>> = (
   inner,
   maxItems
 ) => {
@@ -155,8 +157,7 @@ export const maxItems: TagFunction<MaxItems<number>, Is<any[]>> = (
   );
 };
 
-export type MinProperties<T extends number> = Tag<"minProperties", T>;
-export const minProperties: TagFunction<MinProperties<number>, Is<any>> = (
+export const minProperties: TagHandler<MinProperties<number>, Is<any>> = (
   inner,
   minProperties
 ) => {
@@ -171,8 +172,7 @@ export const minProperties: TagFunction<MinProperties<number>, Is<any>> = (
   );
 };
 
-export type MaxProperties<T extends number> = Tag<"maxProperties", T>;
-export const maxProperties: TagFunction<MaxProperties<number>, Is<any>> = (
+export const maxProperties: TagHandler<MaxProperties<number>, Is<any>> = (
   inner,
   maxProperties
 ) => {
@@ -187,11 +187,9 @@ export const maxProperties: TagFunction<MaxProperties<number>, Is<any>> = (
   );
 };
 
-export type AdditionalProperties = Tag<"additionalProperties", true>;
-export const additionalProperties: TagFunction<
-  AdditionalProperties,
-  Is<any>
-> = (inner) => {
+export const additionalProperties: TagHandler<AdditionalProperties, Is<any>> = (
+  inner
+) => {
   const output = (x: any) => {
     const previous = context.additionalProperties;
     context.additionalProperties = true;

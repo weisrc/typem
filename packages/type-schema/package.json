@@ -1,8 +1,9 @@
 {
-  "name": "is-macro",
+  "name": "type-schema",
   "exports": {
     ".": "./src/index.ts",
-    "./env": "./src/env.ts"
+    "./is-env": "./src/is-env.ts",
+    "./schema-env": "./src/schema-env.ts"
   },
   "type": "module",
   "dependencies": {

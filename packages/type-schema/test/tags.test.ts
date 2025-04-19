@@ -1,24 +1,22 @@
 import { expect, it } from "bun:test";
 import {
   is,
+  type AdditionalProperties,
   type ExclusiveMaximum,
   type ExclusiveMinimum,
   type Format,
   type Maximum,
   type MaxItems,
   type MaxLength,
+  type MaxProperties,
   type Minimum,
   type MinItems,
   type MinLength,
+  type MinProperties,
   type MultipleOf,
   type Pattern,
   type UniqueItems,
 } from "../src";
-import type {
-  AdditionalProperties,
-  MaxProperties,
-  MinProperties,
-} from "../src/tags";
 
 it("tag pattern", () => {
   const check = is<string & Pattern<"alphabet", "^[a-z]+$">>();

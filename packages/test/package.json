@@ -4,7 +4,7 @@
   "module": "src/index.ts",
   "type": "module",
   "dependencies": {
-    "is-macro": "workspace:*"
+    "type-schema": "workspace:*"
   },
   "devDependencies": {
     "vite": "^6.2.6"
