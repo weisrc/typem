@@ -1,11 +1,14 @@
 import type { Env, GeneralType, SpecialType } from "type-macro";
 import type { Is, IsMacro } from ".";
 import { additionalProperties } from "./tags";
+import {
+  context,
+  errorPathPop,
+  errorPathPush,
+  errorAdd,
+  errorClear,
+} from "./context";
 export * from "./tags";
-
-export const context = {
-  additionalProperties: false,
-};
 
 export function entry<T>(t: Is<T>) {
   return (() => t) as IsMacro;
@@ -17,7 +20,11 @@ export function error(message: string): any {
 
 export function general<T>(type: GeneralType) {
   return ((x: any) => {
-    return typeof x === type;
+    if (typeof x === type) {
+      return true;
+    }
+    errorAdd("invalid-type", type);
+    return false;
   }) as Is<T>;
 }
 
@@ -25,24 +32,25 @@ export function special<T>(type: SpecialType) {
   if (type === "any" || type === "unknown") {
     return (() => true) as unknown as Is<T>;
   } else if (type === "void") {
-    return ((x: any) => x === undefined) as Is<T>;
+    return ((x: any) => {
+      if (x === undefined) {
+        return true;
+      }
+      errorAdd("invalid-value", undefined);
+      return false;
+    }) as Is<T>;
   }
   throw new Error(`Unsupported special type: ${type}`);
 }
 
 export function literal<T>(value: T) {
   return ((x: any) => {
-    return x === value;
-  }) as Is<any>;
-}
-
-export function optional<T>(type: Is<T>) {
-  return ((x: any) => {
-    if (x === undefined) {
+    if (x === value) {
       return true;
     }
-    return type(x);
-  }) as Is<T>;
+    errorAdd("invalid-value", value);
+    return false;
+  }) as Is<any>;
 }
 
 export function object<T extends object>(
@@ -57,12 +65,14 @@ export function object<T extends object>(
     }
     for (const key of required) {
       if (!(key in x)) {
+        errorAdd("missing-property", key);
         return false;
       }
     }
     if (!context.additionalProperties) {
       for (const key in x) {
         if (!(key in shape)) {
+          errorAdd("additional-property", key);
           return false;
         }
       }
@@ -71,7 +81,10 @@ export function object<T extends object>(
       if (!(key in x)) {
         continue;
       }
-      if (!shape[key](x[key])) {
+      errorPathPush(key);
+      const ok = shape[key](x[key]);
+      errorPathPop();
+      if (!ok) {
         return false;
       }
     }
@@ -84,8 +97,12 @@ export function array<T>(type: Is<T>): Is<T[]> {
     if (!Array.isArray(x)) {
       return false;
     }
-    for (const item of x) {
-      if (!type(item)) {
+    for (let i = 0; i < x.length; i++) {
+      const item = x[i];
+      errorPathPush(i);
+      const ok = type(item);
+      errorPathPop();
+      if (!ok) {
         return false;
       }
     }
@@ -97,6 +114,7 @@ export function union<T>(types: Is<T>[]): Is<T> {
   return ((x: any) => {
     for (const type of types) {
       if (type(x)) {
+        errorClear();
         return true;
       }
     }
@@ -164,11 +182,19 @@ export function recursive<T>(fn: (self: Is<T>) => Is<T>): Is<T> {
 
 export function tuple<T extends any[]>(...types: Is<T[number]>[]): Is<T> {
   return ((x: any) => {
-    if (!Array.isArray(x) || x.length !== types.length) {
+    if (!Array.isArray(x)) {
+      errorAdd("invalid-type", "array");
+      return false;
+    }
+    if (x.length !== types.length) {
+      errorAdd("invalid-size", types.length);
       return false;
     }
     for (let i = 0; i < types.length; i++) {
-      if (!types[i](x[i])) {
+      errorPathPush(i);
+      const ok = types[i](x[i]);
+      errorPathPop();
+      if (!ok) {
         return false;
       }
     }
@@ -184,15 +210,25 @@ export function record<K extends string, V>(
   key: Is<K>,
   value: Is<V>
 ): Is<Record<K, V>> {
+  const isObject = general<any>("object");
   return ((x: any) => {
-    if (typeof x !== "object" || x === null) {
+    if (!isObject(x)) {
       return false;
     }
     for (const k in x) {
-      if (!key(k)) {
+      errorPathPush(k);
+      const keyOk = key(k);
+      errorPathPop();
+
+      if (!keyOk) {
         return false;
       }
-      if (!value(x[k])) {
+
+      errorPathPush(k);
+      const valueOk = value(x[k]);
+      errorPathPop();
+
+      if (!valueOk) {
         return false;
       }
     }

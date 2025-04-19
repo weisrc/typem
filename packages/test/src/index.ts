@@ -1,10 +1,6 @@
 import { is, type Format } from "is-macro";
 
-type A = {
-  [x: string & Format<"email">]: number;
-} & {
-  hello: "world";
-};
+type A = { type: "dog"; name: string } | { type: "cat"; age: number };
 
 const check = is<A>();
 

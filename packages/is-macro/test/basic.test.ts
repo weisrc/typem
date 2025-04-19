@@ -1,12 +1,29 @@
 import { expect, it } from "bun:test";
-import { is } from "../src";
+import { getErrors, is, withErrors } from "../src";
 
 it("should validate numbers", () => {
-  const isNumber = is<number>();
+  const isNumber = withErrors(is<number>());
 
   expect(isNumber(123)).toBe(true);
+  expect(getErrors()).toEqual([]);
+
   expect(isNumber("123")).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      target: "number",
+      type: "invalid-type",
+      path: [],
+    },
+  ]);
+
   expect(isNumber(true)).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      target: "number",
+      type: "invalid-type",
+      path: [],
+    },
+  ]);
 });
 
 it("should validate strings", () => {
@@ -45,11 +62,26 @@ it("should validate undefined", () => {
 });
 
 it("should validate number literals", () => {
-  const is123 = is<123>();
+  const is123 = withErrors(is<123>());
 
   expect(is123(123)).toBe(true);
+  expect(getErrors()).toEqual([]);
   expect(is123(321)).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-value",
+      target: 123,
+      path: [],
+    },
+  ]);
   expect(is123("123")).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-value",
+      target: 123,
+      path: [],
+    },
+  ]);
 });
 
 it("should validate string literals", () => {

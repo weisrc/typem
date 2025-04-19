@@ -21,7 +21,7 @@ import type {
 } from "../src/tags";
 
 it("tag pattern", () => {
-  const check = is<string & Pattern<"^[a-z]+$">>();
+  const check = is<string & Pattern<"alphabet", "^[a-z]+$">>();
 
   expect(check("abc")).toBe(true);
   expect(check("abc123")).toBe(false);
