@@ -22,6 +22,5 @@ it("it should generate schema", () => {
       isActive: { type: "boolean" },
     },
     required: ["id", "name", "age", "email", "isActive"],
-    additionalProperties: false,
   });
 });

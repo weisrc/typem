@@ -187,12 +187,13 @@ export const maxProperties: TagHandler<MaxProperties<number>, Is<any>> = (
   );
 };
 
-export const additionalProperties: TagHandler<AdditionalProperties, Is<any>> = (
-  inner
+export const additionalProperties: TagHandler<AdditionalProperties<boolean>, Is<any>> = (
+  inner,
+  enabled
 ) => {
   const output = (x: any) => {
     const previous = context.additionalProperties;
-    context.additionalProperties = true;
+    context.additionalProperties = enabled;
     const result = inner(x);
     context.additionalProperties = previous;
     return result;

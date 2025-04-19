@@ -1,0 +1,12 @@
+{
+  "name": "gare",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "type-macro": "workspace:*",
+    "type-schema": "workspace:*"
+  }
+}

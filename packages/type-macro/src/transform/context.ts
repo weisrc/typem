@@ -36,9 +36,16 @@ export function getMarker(
 }
 
 export function getLiteral(context: TransformContext, type: ts.Type): any {
+  const text = context.checker.typeToString(type);
+  if (text === "undefined") return undefined;
+  if (text === "null") return null;
+  if (text === "true") return true;
+  if (text === "false") return false;
+
   if (type.isLiteral()) {
     return type.value;
   }
+  
   if (context.checker.isTupleType(type)) {
     return context.checker
       .getTypeArguments(type as ts.TypeReference)

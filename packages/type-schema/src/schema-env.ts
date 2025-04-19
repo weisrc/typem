@@ -34,7 +34,6 @@ export function object<T extends object>(
       Object.entries<Schema>(shape).map(([key, value]) => [key, value()])
     ),
     required,
-    additionalProperties: false,
   });
 }
 

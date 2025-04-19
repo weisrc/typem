@@ -6,7 +6,7 @@ export type Context = {
 };
 
 export const context: Context = {
-  additionalProperties: false,
+  additionalProperties: true,
   enableErrors: false,
   path: [],
   errors: [],

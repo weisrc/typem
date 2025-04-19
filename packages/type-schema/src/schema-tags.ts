@@ -108,8 +108,10 @@ export const maxProperties: TagHandler<MaxProperties<number>, Schema> =
     maxProperties,
   });
 
-export const additionalProperties: TagHandler<AdditionalProperties, Schema> =
-  (inner) => () => ({
-    ...inner,
-    additionalProperties: true,
-  });
+export const additionalProperties: TagHandler<
+  AdditionalProperties<boolean>,
+  Schema
+> = (inner, enabled) => () => ({
+  ...inner,
+  additionalProperties: enabled,
+});

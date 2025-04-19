@@ -14,7 +14,10 @@ export type Minimum<T extends number> = Tag<"minimum", T>;
 export type Maximum<T extends number> = Tag<"maximum", T>;
 export type MinProperties<T extends number> = Tag<"minProperties", T>;
 export type MaxProperties<T extends number> = Tag<"maxProperties", T>;
-export type AdditionalProperties = Tag<"additionalProperties", true>;
+export type AdditionalProperties<T extends boolean> = Tag<
+  "additionalProperties",
+  T
+>;
 export type MaxItems<T extends number> = Tag<"maxItems", T>;
 export type MinItems<T extends number> = Tag<"minItems", T>;
 export type MinLength<T extends number> = Tag<"minLength", T>;

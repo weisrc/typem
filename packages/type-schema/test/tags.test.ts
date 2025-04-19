@@ -127,10 +127,10 @@ it("tag maxProperties", () => {
 
 it("tag additionalProperties", () => {
   const check1 = is<{ a: number }>();
-  const check2 = is<{ a: number } & AdditionalProperties>();
+  const check2 = is<{ a: number } & AdditionalProperties<false>>();
 
-  expect(check1({ a: 1, b: 2 })).toBe(false);
-  expect(check2({ a: 1, b: 2 })).toBe(true);
+  expect(check1({ a: 1, b: 2 })).toBe(true);
+  expect(check2({ a: 1, b: 2 })).toBe(false);
   expect(check1({ a: 1 })).toBe(true);
   expect(check2({ a: 1 })).toBe(true);
   expect(check1({})).toBe(false);
