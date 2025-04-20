@@ -1,10 +1,7 @@
 import type { BUILTIN_MAP, MODIFIER_MAP } from "./constants";
 import type { GeneralType, SpecialType } from "./transform/type-codegen/common";
 
-export function macro<
-  T extends (...args: any) => (...args: any) => any,
-  P extends string
->() {
+export function macro<T extends (...args: any) => any, P extends string>() {
   return (() => {
     throw new Error("Is the type-macro plugin installed?");
   }) as unknown as T & {
@@ -12,10 +9,10 @@ export function macro<
   };
 }
 
-export type TagHandler<T extends Tag<string, any>, U> = (
+export type TagHandler<T extends Tag<string, any>, U, V = U> = (
   inner: U,
   param: GetTagParam<T>
-) => U;
+) => V;
 
 type GetTagParam<T> = T extends Tag<string, infer U> ? U : never;
 

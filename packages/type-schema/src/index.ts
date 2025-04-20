@@ -1,6 +1,8 @@
 import { macro, type Tag } from "type-macro";
 import { context } from "./context";
-import type { FORMAT_REGEX_MAP } from "./formats";
+import { FORMAT_REGEX_MAP } from "./utils";
+
+export { FORMAT_REGEX_MAP };
 
 export type Is<T> = (x: any) => x is T;
 export type IsMacro = <T>() => Is<T>;

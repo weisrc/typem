@@ -8,11 +8,13 @@ it("it should generate schema", () => {
     age: number;
     email: string;
     isActive: boolean;
+    friends: User[];
   };
 
-  const userSchema = schema<User>();
+  const getUserSchema = schema<User>();
 
-  expect(userSchema()).toEqual({
+  expect(getUserSchema()).toEqual({
+    $id: "recursive",
     type: "object",
     properties: {
       id: { type: "number" },
@@ -20,7 +22,11 @@ it("it should generate schema", () => {
       age: { type: "number" },
       email: { type: "string" },
       isActive: { type: "boolean" },
+      friends: {
+        type: "array",
+        items: { $ref: "recursive" },
+      },
     },
-    required: ["id", "name", "age", "email", "isActive"],
+    required: ["id", "name", "age", "email", "isActive", "friends"],
   });
 });

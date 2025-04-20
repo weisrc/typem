@@ -2,7 +2,7 @@
   "name": "gare",
   "exports": {
     ".": "./src/index.ts",
-    "./env": "./src/env.ts"
+    "./macro-env": "./src/macro/env.ts"
   },
   "type": "module",
   "dependencies": {

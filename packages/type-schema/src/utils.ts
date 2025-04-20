@@ -23,3 +23,4 @@ export const FORMAT_REGEX_MAP = {
   "relative-json-pointer": /^\d+(#|(\/(?:[^~\/]|~[01])*))*$/,
   regex: /.*/,
 } as const;
+

@@ -17,7 +17,7 @@ import type {
   Schema,
   UniqueItems,
 } from ".";
-import { FORMAT_REGEX_MAP } from "./formats";
+import { FORMAT_REGEX_MAP } from "./utils";
 export const pattern: TagHandler<Pattern<string, string>, Schema> =
   (inner, [name, source]) =>
   () =>

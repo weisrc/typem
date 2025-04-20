@@ -18,7 +18,7 @@ import type {
   UniqueItems,
 } from ".";
 import { context, errorAdd, type ValidationErrorType } from "./context";
-import { FORMAT_REGEX_MAP } from "./formats";
+import { FORMAT_REGEX_MAP } from "./utils";
 
 function makePredicate<T>(
   inner: Is<T>,
