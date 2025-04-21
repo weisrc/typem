@@ -1,0 +1,11 @@
+{
+  "name": "@typem/predicate",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "typem": "workspace:*"
+  }
+}

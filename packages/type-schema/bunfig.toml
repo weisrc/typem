@@ -1,2 +1,0 @@
-[test]
-preload = ["type-macro/bun-preload"]

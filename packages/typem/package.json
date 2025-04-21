@@ -1,0 +1,33 @@
+{
+  "name": "typem",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./macro": {
+      "types": "./src/macro.ts",
+      "default": "./dist/macro.js"
+    },
+    "./bun-preload": {
+      "types": "./src/plugin/bun-preload.ts",
+      "default": "./dist/plugin/bun-preload.js"
+    },
+    "./bun": {
+      "types": "./src/plugin/bun.ts",
+      "default": "./dist/plugin/bun.js"
+    },
+    "./rollup": {
+      "types": "./src/plugin/rollup.ts",
+      "default": "./dist/plugin/rollup.js"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "rollup": "^4.39.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

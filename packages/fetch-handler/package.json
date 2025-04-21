@@ -1,0 +1,14 @@
+{
+  "name": "@typem/fetch-handler",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./src/env.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "@typem/json-schema": "workspace:*",
+    "@typem/predicate": "workspace:*",
+    "openapi-types": "^12.1.3",
+    "typem": "workspace:*"
+  }
+}
