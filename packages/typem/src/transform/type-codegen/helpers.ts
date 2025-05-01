@@ -66,12 +66,17 @@ export function annotatedIntersectionCodegen(
   typeMap: TypeMap
 ) {
   const { annotations, rest } = splitAnnotations(context, types);
-  let out = intersectionCodegen(context, rest, typeMap);
+  return wrapWithAnnotations(annotations, intersectionCodegen(context, rest, typeMap));
+}
 
+export function wrapWithAnnotations(
+  annotations: Record<string, any>,
+  inner: string
+) {
+  let out = inner;
   for (const [key, value] of Object.entries(annotations)) {
     out = `(t.${key} ?? (x => x))(${out}, ${JSON.stringify(value)})`;
   }
-
   return out;
 }
 

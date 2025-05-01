@@ -13,9 +13,11 @@ import {
   getAnnotation,
   annotatedIntersectionCodegen,
   signaturesCodegen,
+  wrapWithAnnotations,
 } from "./helpers";
 import { unionCodegen } from "./union";
 import { objectCodegen } from "./object";
+import { debug } from "../logging";
 
 export function typeCodegen(
   context: TransformContext,
@@ -45,6 +47,15 @@ function innerCodegen(
   type: ts.Type,
   typeMap: TypeMap
 ) {
+  const annotation = getAnnotation(context, type);
+
+  debug("annotation", annotation);
+  if (annotation && "builtin" in annotation) {
+    const inner = builtinCodegen(context, annotation.builtin, type, typeMap);
+    delete annotation.builtin;
+    return wrapWithAnnotations(annotation, inner);
+  }
+
   const typeName = context.checker.typeToString(type);
 
   if ((generalTypes as readonly string[]).includes(typeName)) {
@@ -73,7 +84,6 @@ function innerCodegen(
     return builtinCodegen(context, bultinName, type, typeMap);
   }
 
-  const annotation = getAnnotation(context, type);
   if (annotation) {
     return `t.error("annotation not in intersection")`;
   }

@@ -1,8 +1,8 @@
 import type { OpenAPIV3_1 } from "openapi-types";
 import type { FromInput } from "typem";
-import type { RequestContext } from ".";
+import type { RequestWithParams } from ".";
 
-export type Extractor<T> = (request: RequestContext, param: T) => any;
+export type Extractor<T> = (request: RequestWithParams, param: T) => any;
 
 export type ExtractorDocsUpdater = (
   docs: OpenAPIV3_1.OperationObject,

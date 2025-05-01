@@ -1,13 +1,17 @@
 import { it } from "bun:test";
-import type { Format, FromParam } from "typem";
-import { bootstrap, fetchHandler, type RequestContext } from "../src";
+import type { Format, FromParam, FromQuery } from "typem";
+import { bootstrap, fetchHandler, type RequestWithParams } from "../src";
 import type { OpenAPIV3_1 } from "openapi-types";
 
 it("it works", () => {
   bootstrap();
 
-  const hello = (name: string & Format<"email"> & FromParam<"name">) => {
-    return `Hello ${name}`;
+  const hello = (
+    name: string & FromQuery<"name">,
+    req: RequestWithParams
+  ) => {
+    console.log(req);
+    return `Hello ${name} ${req.url}`;
   };
 
   const getHelloSchema = fetchHandler(hello);
@@ -16,14 +20,11 @@ it("it works", () => {
     operationId: "getHello",
   };
 
-  const ctx: RequestContext = {
-    request: new Request("http://localhost:3000/hello?name=world"),
-    params: {
-      name: "test@example.org",
-    },
-  };
+  const req = new Request(
+    "http://localhost:3000/hello?name=world"
+  ) as RequestWithParams;
 
-  console.log(getHelloSchema.handler(ctx));
+  console.log(getHelloSchema.handler(req));
 
   getHelloSchema.docsUpdater(docs);
 

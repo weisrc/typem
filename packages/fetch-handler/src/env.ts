@@ -5,10 +5,11 @@ import type {
   FetchHandlerDescriptor,
   FetchHandlerMacro,
   Merged,
-  RequestContext,
+  RequestWithParams,
 } from ".";
 import { context, type Extractor, type ExtractorDocsUpdater } from "./context";
 import { getErrors, withErrors, type Predicate } from "@typem/predicate";
+import type { OpenAPIV3_1 } from "openapi-types";
 
 export * from "./merged-env";
 
@@ -22,6 +23,10 @@ export const fromInput: AnnotationHandler<
   };
 };
 
+export const requestContext = () => {
+  return {};
+};
+
 export function error(message: string) {
   throw new Error(message);
 }
@@ -30,6 +35,12 @@ export function entry(
   inputs: Merged<any>,
   output: Merged<any>
 ): FetchHandlerMacro {
+  type PredicateExtractor = {
+    predicate: Predicate<any>;
+    extractor: Extractor<any>;
+    param: any;
+  };
+
   const inputTypes = inputs.types;
 
   if (!inputTypes) {
@@ -37,15 +48,11 @@ export function entry(
   }
 
   return (fn: (...args: any) => any) => {
-    const predicates: Predicate<any>[] = [];
-    const extractors: Extractor<any>[] = [];
+    const predicateExtractors: PredicateExtractor[] = [];
     const updaters: DocsUpdater[] = [];
-    const params: any[] = [];
 
     for (const input of inputTypes) {
       const { fromInput, predicate, schema } = input;
-
-      predicates.push(withErrors(predicate));
 
       if (!fromInput) {
         throw new Error("fromInput is missing");
@@ -55,21 +62,22 @@ export function entry(
       if (!extractor) {
         throw new Error(`Extractor ${id} not found`);
       }
-      extractors.push((ctx, param) => extractor(ctx, param));
       const updater = context.docsUpdaters[id];
       if (updater) {
         updaters.push((docs) => updater(docs, param, schema()));
       }
-      params.push(param);
+      predicateExtractors.push({
+        predicate: predicate
+          ? withErrors(predicate)
+          : (((_) => true) as Predicate<any>),
+        extractor,
+        param,
+      });
     }
 
-    function handler(ctx: RequestContext) {
+    function handler(ctx: RequestWithParams) {
       const args: any[] = [];
-      for (let i = 0; i < extractors.length; i++) {
-        const extractor = extractors[i];
-        const param = params[i];
-        const predicate = predicates[i];
-
+      for (const { predicate, extractor, param } of predicateExtractors) {
         const value = extractor(ctx, param);
         if (!predicate(value)) {
           return getErrors();
@@ -77,14 +85,24 @@ export function entry(
 
         args.push(value);
       }
-      const result = fn(...args);
+      const result = fn(...predicateExtractors);
       return result;
     }
 
-    function docsUpdater(docs: any) {
+    function docsUpdater(docs: OpenAPIV3_1.OperationObject) {
       for (const updater of updaters) {
         updater(docs);
       }
+
+      docs.responses = docs.responses ?? {};
+      docs.responses[200] = {
+        description: "",
+        content: {
+          "application/json": {
+            schema: output.schema(),
+          },
+        },
+      };
     }
 
     const descriptor: FetchHandlerDescriptor = {
