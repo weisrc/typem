@@ -16,7 +16,8 @@ import { registerExtractor } from "./context";
 
 export type RequestWithParams = Request & {
   params?: Record<string, string>;
-} & Builtin<"requestContext"> & FromRequest;
+} & Builtin<"request"> &
+  FromRequest;
 
 export type Merged<T> = {
   types?: Merged<any>[];
@@ -25,14 +26,16 @@ export type Merged<T> = {
   schema: JsonSchema<T>;
 };
 
-export type DocsUpdater = (docs: OpenAPIV3_1.OperationObject) => void;
+export type OperationSchema = OpenAPIV3_1.OperationObject;
 
-export type FetchHandlerDescriptor<
+export type OperationSchemaUpdater = (doc: OperationSchema) => void;
+
+export type FetchHandler<
   _Parameters extends FromInput<string, any>[] = FromInput<string, any>[],
   _ReturnType = any
 > = {
-  handler: (input: RequestWithParams) => Response;
-  docsUpdater: DocsUpdater;
+  (input: RequestWithParams): Response;
+  schema: OperationSchema;
 };
 
 export type FetchHandlerMacro = <
@@ -40,9 +43,9 @@ export type FetchHandlerMacro = <
   ReturnType
 >(
   fn: (...args: Parameters) => ReturnType
-) => FetchHandlerDescriptor<Parameters, ReturnType>;
+) => FetchHandler<Parameters, ReturnType>;
 
-export const fetchHandler = macro<
+export const handler = macro<
   FetchHandlerMacro,
   "@typem/fetch-handler/env"
 >();

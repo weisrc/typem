@@ -1,32 +1,23 @@
 import { it } from "bun:test";
-import type { Format, FromParam, FromQuery } from "typem";
-import { bootstrap, fetchHandler, type RequestWithParams } from "../src";
-import type { OpenAPIV3_1 } from "openapi-types";
+import type { FromQuery } from "typem";
+import { bootstrap, handler, type RequestWithParams } from "../src";
 
 it("it works", () => {
   bootstrap();
 
-  const hello = (
-    name: string & FromQuery<"name">,
-    req: RequestWithParams
-  ) => {
-    console.log(req);
-    return `Hello ${name} ${req.url}`;
-  };
+  function hello(name: string & FromQuery<"name">, req: RequestWithParams) {
+    return {
+      name,
+      time: Date.now(),
+      pets: ["bob", "jerry"],
+      url: req.url
+    };
+  }
 
-  const getHelloSchema = fetchHandler(hello);
+  const helloHandler = handler(hello);
 
-  const docs: OpenAPIV3_1.OperationObject = {
-    operationId: "getHello",
-  };
+  const req = new Request("http://localhost:3000/hello?name=world");
 
-  const req = new Request(
-    "http://localhost:3000/hello?name=world"
-  ) as RequestWithParams;
-
-  console.log(getHelloSchema.handler(req));
-
-  getHelloSchema.docsUpdater(docs);
-
-  console.log(JSON.stringify(docs, null, 2));
+  console.log(helloHandler(req));
+  console.log(JSON.stringify(helloHandler.schema, null, 2));
 });
