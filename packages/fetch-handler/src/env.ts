@@ -98,7 +98,11 @@ export function entry(
         args.push(value);
       }
 
-      return fn(...args);
+      return new Response(JSON.stringify(fn(...args)), {
+        headers: {
+          "content-type": "application/json",
+        },
+      });
     }
 
     return Object.assign(handler, {
