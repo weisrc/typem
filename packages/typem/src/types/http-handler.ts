@@ -5,14 +5,14 @@ export type FromInput<Id extends string, Arg> = Annotation<
   [Id, Arg]
 >;
 
-export type FromParam<Name extends string> = FromInput<"fromParam", Name>;
+export type FromParam<Name extends string> = FromInput<"param", Name>;
 
-export type FromQuery<Name extends string> = FromInput<"fromQuery", Name>;
+export type FromQuery<Name extends string> = FromInput<"query", Name>;
 
-export type FromBody<ContentType extends string> = FromInput<"fromBody", ContentType>;
+export type FromJson = FromInput<"json", []>;
 
-export type FromHeader<Name extends string> = FromInput<"fromHeader", Name>;
+export type FromHeader<Name extends string> = FromInput<"header", Name>;
 
-export type FromCookie<Name extends string> = FromInput<"fromCookie", Name>;
+export type FromCookie<Name extends string> = FromInput<"cookie", Name>;
 
-export type FromRequest = FromInput<"fromRequest", []>;
+export type FromRequest = FromInput<"request", []>;

@@ -61,6 +61,7 @@ export function object<T extends object>(
 ): Predicate<T> {
   return ((x: any) => {
     if (typeof x !== "object" || x === null) {
+      errorAdd("invalid-type", "object");
       return false;
     }
     for (const key of required) {
@@ -158,7 +159,9 @@ export function intersection<T>(types: Predicate<T>[]): Predicate<T> {
 
 const visited = new WeakMap<Predicate<any>, WeakSet<any>>();
 
-export function recursive<T>(fn: (self: Predicate<T>) => Predicate<T>): Predicate<T> {
+export function recursive<T>(
+  fn: (self: Predicate<T>) => Predicate<T>
+): Predicate<T> {
   let type: Predicate<T>;
   const inner = (x: any) => {
     if (visited.has(type)) {
@@ -180,7 +183,9 @@ export function recursive<T>(fn: (self: Predicate<T>) => Predicate<T>): Predicat
   return type;
 }
 
-export function tuple<T extends any[]>(...types: Predicate<T[number]>[]): Predicate<T> {
+export function tuple<T extends any[]>(
+  ...types: Predicate<T[number]>[]
+): Predicate<T> {
   return ((x: any) => {
     if (!Array.isArray(x)) {
       errorAdd("invalid-type", "array");

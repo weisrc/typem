@@ -1,13 +1,14 @@
 import type { GeneralType, SpecialType } from "typem/macro";
 import * as predicateEnv from "@typem/predicate/env";
 import * as jsonSchemaEnv from "@typem/json-schema/env";
-import type { Merged } from ".";
+import type { Merged } from "./types";
 import { mapObjectValues } from "./utils";
 
 export * from "./merged-annotations-env";
 
 export function general(type: GeneralType): Merged<any> {
   return {
+    isUndefined: type === "undefined",
     predicate: predicateEnv.general(type),
     schema: jsonSchemaEnv.general(type),
   };
@@ -52,6 +53,10 @@ export function array(type: Merged<any>): Merged<any> {
 
 export function union(types: Merged<any>[]): Merged<any> {
   return {
+    inner: {
+      mode: "union",
+      types,
+    },
     predicate: predicateEnv.union(types.map((type) => type.predicate)),
     schema: jsonSchemaEnv.union(types.map((type) => type.schema)),
   };
@@ -63,6 +68,10 @@ export function discriminatedUnion(
   types: Merged<any>[]
 ): Merged<any> {
   return {
+    inner: {
+      mode: "union",
+      types,
+    },
     predicate: predicateEnv.discriminatedUnion(
       path,
       values.map((value) => value.predicate),
@@ -78,6 +87,10 @@ export function discriminatedUnion(
 
 export function intersection(types: Merged<any>[]): Merged<any> {
   return {
+    inner: {
+      mode: "intersection",
+      types,
+    },
     predicate: predicateEnv.intersection(types.map((type) => type.predicate)),
     schema: jsonSchemaEnv.intersection(types.map((type) => type.schema)),
   };
@@ -111,7 +124,10 @@ export function tuple(...types: Merged<any>[]): Merged<any> {
   const schema = jsonSchemaEnv.tuple(...schemas);
 
   return {
-    types,
+    inner: {
+      mode: "tuple",
+      types,
+    },
     predicate,
     schema,
   };

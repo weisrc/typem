@@ -64,11 +64,36 @@ export function intersection(types: JsonSchema[]): JsonSchema {
   });
 }
 
+let recursiveReferenceIdCounter = 0;
+function replaceValue(data: any, target: unknown, replacement: unknown) {
+  if (typeof data !== "object" || data === null) {
+    return;
+  }
+
+  for (const key in data) {
+    if (data[key] === target) {
+      data[key] = replacement;
+    } else {
+      replaceValue(data[key], target, replacement);
+    }
+  }
+}
+
 export function recursive(fn: (self: JsonSchema) => JsonSchema): JsonSchema {
-  return () => ({
-    $id: "recursive",
-    ...fn(() => ({ $ref: "recursive" }))(),
-  });
+  return () => {
+    const id = "recursive-reference-id-" + recursiveReferenceIdCounter++;
+
+    const out = {
+      $id: id,
+      ...fn(() => ({ $ref: id }))(),
+    };
+
+    if (out.$id !== id) {
+      replaceValue(out, id, out.$id);
+    }
+
+    return out;
+  };
 }
 
 export function tuple(...types: JsonSchema[]): JsonSchema {

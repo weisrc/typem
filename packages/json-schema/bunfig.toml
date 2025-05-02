@@ -1,2 +1,2 @@
 [test]
-preload = ["type-macro/bun-preload"]
+preload = ["typem/bun-preload"]

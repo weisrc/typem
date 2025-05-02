@@ -1,35 +1,38 @@
-import type { OpenAPIV3_1 } from "openapi-types";
 import type { FromInput } from "typem";
-import type { RequestWithParams } from ".";
-
-export type Extractor<T> = (request: RequestWithParams, param: T) => any;
-
-export type ExtractorDocsUpdater = (
-  docs: OpenAPIV3_1.OperationObject,
-  param: any,
-  schema: any
-) => void;
+import type { Extractor } from "./types";
 
 export type Context = {
   extractors: Record<string, Extractor<any>>;
-  docsUpdaters: Record<string, ExtractorDocsUpdater>;
 };
 
 export const context: Context = {
   extractors: {},
-  docsUpdaters: {},
 };
 
-export function registerExtractor<T extends FromInput<string, any>>(
-  name: T extends FromInput<infer N, any> ? N : never,
-  extractor: Extractor<T extends FromInput<any, infer P> ? P : never>,
-  schemaUpdater?: ExtractorDocsUpdater
+export function registerExtractor(
+  extractor: Extractor<FromInput<string, any>>
 ): void {
-  if (context.extractors[name]) {
-    throw new Error(`Extractor ${name} already registered`);
+  const id = extractor.id;
+  if (context.extractors[id]) {
+    throw new Error(`Extractor ${id} already registered`);
   }
-  context.extractors[name] = extractor;
-  if (schemaUpdater) {
-    context.docsUpdaters[name] = schemaUpdater;
+  context.extractors[id] = extractor;
+}
+
+export function getExtractor(id: string): Extractor<FromInput<string, any>> {
+  const extractor = context.extractors[id];
+  if (!extractor) {
+    throw new Error(`Extractor ${id} not found`);
   }
+  return extractor;
+}
+
+export function unregisterExtractor(
+  extractor: Extractor<FromInput<string, any>>
+): void {
+  const id = extractor.id;
+  if (!context.extractors[id]) {
+    throw new Error(`Extractor ${id} not registered`);
+  }
+  delete context.extractors[id];
 }

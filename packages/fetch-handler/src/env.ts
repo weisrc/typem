@@ -1,14 +1,13 @@
-import type { AnnotationHandler } from "typem/macro";
+import { getErrors, type Predicate } from "@typem/predicate";
 import type { FromInput } from "typem";
+import type { AnnotationHandler } from "typem/macro";
 import type {
+  FetchHandler,
   FetchHandlerMacro,
   Merged,
-  RequestWithParams,
-  OperationSchema,
-  FetchHandler,
-} from ".";
-import { context, type Extractor, type ExtractorDocsUpdater } from "./context";
-import { getErrors, withErrors, type Predicate } from "@typem/predicate";
+  HandlerRequest,
+} from "./types";
+import { getPredicateExtractorsWithSchema } from "./utils";
 
 export * from "./merged-env";
 
@@ -16,14 +15,21 @@ export const fromInput: AnnotationHandler<
   FromInput<string, any>,
   Merged<any>
 > = (inner, fromInput) => {
+  if (inner.fromInput) {
+    throw new Error("cannot have two FromInput");
+  }
+
   return {
     ...inner,
     fromInput,
   };
 };
 
-export function request() {
-  return {};
+export function unit(): Merged<any> {
+  return {
+    predicate: (() => true) as unknown as Predicate<any>,
+    schema: () => undefined,
+  };
 }
 
 export function error(message: string) {
@@ -31,82 +37,67 @@ export function error(message: string) {
 }
 
 export function entry(
-  inputs: Merged<any>,
+  input: Merged<any>,
   output: Merged<any>
 ): FetchHandlerMacro {
-  type PredicateExtractor = {
-    predicate: Predicate<any>;
-    extractor: Extractor<any>;
-    param: any;
-  };
+  const inner = input.inner;
 
-  const inputTypes = inputs.types;
-
-  const operationSchema: OperationSchema = {
-    responses: {
-      200: {
-        description: "",
-        content: {
-          "application/json": {
-            schema: output.schema(),
-          },
-        },
-      },
-    },
-  };
-
-  if (!inputTypes) {
+  if (!inner) {
     throw new Error("input types is missing");
   }
 
+  if (inner.mode !== "tuple") {
+    throw new Error("input types is not a tuple");
+  }
+
   return (fn: (...args: any) => any) => {
-    const predicateExtractors: PredicateExtractor[] = [];
+    const { predicateExtractors, operationSchema } =
+      getPredicateExtractorsWithSchema(inner.types, output);
 
-    for (const input of inputTypes) {
-      const { fromInput, predicate, schema } = input;
-
-      if (!fromInput) {
-        throw new Error("fromInput is missing");
-      }
-      const [id, param] = fromInput;
-      const extractor = context.extractors[id];
-      if (!extractor) {
-        throw new Error(`Extractor ${id} not found`);
-      }
-
-      predicateExtractors.push({
-        predicate: predicate
-          ? withErrors(predicate)
-          : (((_) => true) as Predicate<any>),
+    async function getHandlerOutput(req: HandlerRequest): Promise<any> {
+      const args: any[] = [];
+      for (const {
+        predicate,
         extractor,
         param,
-      });
-
-      const updater = context.docsUpdaters[id];
-      if (updater) {
-        updater(operationSchema, param, schema());
+        optional,
+      } of predicateExtractors) {
+        const value = await extractor.extract(req, param);
+        if (predicate(value)) {
+          args.push(value);
+          continue;
+        }
+        if (value === undefined && optional) {
+          args.push(undefined);
+          continue;
+        }
+        return Response.json(
+          {
+            extractor: {
+              id: extractor.id,
+              param,
+            },
+            errors: getErrors(),
+          },
+          {
+            status: 400,
+          }
+        );
       }
+
+      return await fn(...args);
     }
 
-    function handler(ctx: RequestWithParams) {
-      const args: any[] = [];
-      for (const { predicate, extractor, param } of predicateExtractors) {
-        const value = extractor(ctx, param);
-        if (!predicate(value)) {
-          return getErrors();
-        }
-        args.push(value);
+    async function handler(req: HandlerRequest) {
+      const output = await getHandlerOutput(req);
+      if (output instanceof Response) {
+        return output;
       }
-
-      return new Response(JSON.stringify(fn(...args)), {
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      return Response.json(output);
     }
 
     return Object.assign(handler, {
       schema: operationSchema,
-    }) as FetchHandler;
+    }) as FetchHandler<any, any>;
   };
 }

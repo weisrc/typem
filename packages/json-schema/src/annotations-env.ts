@@ -1,6 +1,9 @@
-import type { AnnotationHandler } from "typem/macro";
 import type {
   AdditionalProperties,
+  Default,
+  Deprecated,
+  Description,
+  Examples,
   ExclusiveMaximum,
   ExclusiveMinimum,
   Format,
@@ -14,10 +17,15 @@ import type {
   MinProperties,
   MultipleOf,
   Pattern,
+  ReadOnly,
+  ReferenceId,
+  Title,
   UniqueItems,
+  WriteOnly,
 } from "typem";
-import { FORMAT_REGEX_MAP } from "./utils";
+import type { AnnotationHandler } from "typem/macro";
 import type { JsonSchema } from ".";
+import { FORMAT_REGEX_MAP } from "./utils";
 export const pattern: AnnotationHandler<Pattern<string, string>, JsonSchema> =
   (inner, [name, source]) =>
   () =>
@@ -124,3 +132,51 @@ export const additionalProperties: AnnotationHandler<
   ...inner(),
   additionalProperties: enabled,
 });
+
+export const referenceId: AnnotationHandler<ReferenceId<string>, JsonSchema> =
+  (inner, referenceId) => () => ({
+    ...inner(),
+    $id: referenceId,
+  });
+
+export const title: AnnotationHandler<Title<string>, JsonSchema> =
+  (inner, title) => () => ({
+    ...inner(),
+    title,
+  });
+
+export const description: AnnotationHandler<Description<string>, JsonSchema> =
+  (inner, description) => () => ({
+    ...inner(),
+    description,
+  });
+
+export const deprecated: AnnotationHandler<Deprecated, JsonSchema> =
+  (inner) => () => ({
+    ...inner(),
+    deprecated: true,
+  });
+
+export const readOnly: AnnotationHandler<ReadOnly, JsonSchema> =
+  (inner) => () => ({
+    ...inner(),
+    readOnly: true,
+  });
+
+export const writeOnly: AnnotationHandler<WriteOnly, JsonSchema> =
+  (inner) => () => ({
+    ...inner(),
+    writeOnly: true,
+  });
+
+export const defaultValue: AnnotationHandler<Default<any>, JsonSchema> =
+  (inner, defaultValue) => () => ({
+    ...inner(),
+    default: defaultValue,
+  });
+
+export const examples: AnnotationHandler<Examples<any[]>, JsonSchema> =
+  (inner, examples) => () => ({
+    ...inner(),
+    examples,
+  });

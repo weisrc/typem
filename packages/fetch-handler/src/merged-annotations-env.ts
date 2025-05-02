@@ -1,6 +1,10 @@
 import type { AnnotationHandler } from "typem/macro";
 import type {
   AdditionalProperties,
+  Default,
+  Deprecated,
+  Description,
+  Examples,
   ExclusiveMaximum,
   ExclusiveMinimum,
   Format,
@@ -15,16 +19,20 @@ import type {
   MinProperties,
   MultipleOf,
   Pattern,
+  ReadOnly,
+  ReferenceId,
+  Title,
   UniqueItems,
+  WriteOnly,
 } from "typem";
 import * as predicateEnv from "@typem/predicate/env";
 import * as jsonSchemaEnv from "@typem/json-schema/env";
-import type { Merged } from ".";
+import type { Merged } from "./types";
 
-export const pattern: AnnotationHandler<Pattern<string, string>, Merged<string>> = (
-  inner,
-  [name, source]
-) => ({
+export const pattern: AnnotationHandler<
+  Pattern<string, string>,
+  Merged<string>
+> = (inner, [name, source]) => ({
   predicate: predicateEnv.pattern(inner.predicate, [name, source]),
   schema: jsonSchemaEnv.pattern(inner.schema, [name, source]),
 });
@@ -69,15 +77,17 @@ export const exclusiveMaximum: AnnotationHandler<
   schema: jsonSchemaEnv.exclusiveMaximum(inner.schema, exclusiveMaximum),
 });
 
-export const multipleOf: AnnotationHandler<MultipleOf<number>, Merged<number>> = (
-  inner,
-  multipleOf
-) => ({
+export const multipleOf: AnnotationHandler<
+  MultipleOf<number>,
+  Merged<number>
+> = (inner, multipleOf) => ({
   predicate: predicateEnv.multipleOf(inner.predicate, multipleOf),
   schema: jsonSchemaEnv.multipleOf(inner.schema, multipleOf),
 });
 
-export const uniqueItems: AnnotationHandler<UniqueItems, Merged<any[]>> = (inner) => ({
+export const uniqueItems: AnnotationHandler<UniqueItems, Merged<any[]>> = (
+  inner
+) => ({
   predicate: predicateEnv.uniqueItems(inner.predicate, true),
   schema: jsonSchemaEnv.uniqueItems(inner.schema, true),
 });
@@ -114,18 +124,18 @@ export const maxItems: AnnotationHandler<MaxItems<number>, Merged<any[]>> = (
   schema: jsonSchemaEnv.maxItems(inner.schema, maxItems),
 });
 
-export const minProperties: AnnotationHandler<MinProperties<number>, Merged<any>> = (
-  inner,
-  minProperties
-) => ({
+export const minProperties: AnnotationHandler<
+  MinProperties<number>,
+  Merged<any>
+> = (inner, minProperties) => ({
   predicate: predicateEnv.minProperties(inner.predicate, minProperties),
   schema: jsonSchemaEnv.minProperties(inner.schema, minProperties),
 });
 
-export const maxProperties: AnnotationHandler<MaxProperties<number>, Merged<any>> = (
-  inner,
-  maxProperties
-) => ({
+export const maxProperties: AnnotationHandler<
+  MaxProperties<number>,
+  Merged<any>
+> = (inner, maxProperties) => ({
   predicate: predicateEnv.maxProperties(inner.predicate, maxProperties),
   schema: jsonSchemaEnv.maxProperties(inner.schema, maxProperties),
 });
@@ -136,4 +146,63 @@ export const additionalProperties: AnnotationHandler<
 > = (inner, enabled) => ({
   predicate: predicateEnv.additionalProperties(inner.predicate, enabled),
   schema: jsonSchemaEnv.additionalProperties(inner.schema, enabled),
+});
+
+export const referenceId: AnnotationHandler<
+  ReferenceId<string>,
+  Merged<any>
+> = (inner, referenceId) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.referenceId(inner.schema, referenceId),
+});
+
+export const title: AnnotationHandler<Title<string>, Merged<any>> = (
+  inner,
+  title
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.title(inner.schema, title),
+});
+
+export const description: AnnotationHandler<
+  Description<string>,
+  Merged<any>
+> = (inner, description) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.description(inner.schema, description),
+});
+
+export const deprecated: AnnotationHandler<Deprecated, Merged<any>> = (
+  inner
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.deprecated(inner.schema, true),
+});
+
+export const readOnly: AnnotationHandler<ReadOnly, Merged<any>> = (inner) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.readOnly(inner.schema, true),
+});
+
+export const writeOnly: AnnotationHandler<WriteOnly, Merged<any>> = (
+  inner
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.writeOnly(inner.schema, true),
+});
+
+export const defaultValue: AnnotationHandler<Default<any>, Merged<any>> = (
+  inner,
+  defaultValue
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.defaultValue(inner.schema, defaultValue),
+});
+
+export const examples: AnnotationHandler<Examples<any[]>, Merged<any>> = (
+  inner,
+  examples
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.examples(inner.schema, examples),
 });

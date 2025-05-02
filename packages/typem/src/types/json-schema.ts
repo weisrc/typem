@@ -47,3 +47,12 @@ export type Pattern<Name extends string, Regex extends string> = Annotation<
   "pattern",
   [Name, Regex]
 >;
+
+export type ReferenceId<Id extends string> = Annotation<"referenceId", Id>;
+export type Title<Text extends string> = Annotation<"title", Text>;
+export type Description<Text extends string> = Annotation<"description", Text>;
+export type Default<Value> = Annotation<"defaultValue", Value>;
+export type Examples<Values extends any[]> = Annotation<"examples", Values>;
+export type Deprecated = Annotation<"deprecated", true>;
+export type ReadOnly = Annotation<"readOnly", true>;
+export type WriteOnly = Annotation<"writeOnly", true>;

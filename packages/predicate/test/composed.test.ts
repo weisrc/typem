@@ -18,6 +18,13 @@ it("should validate objects", () => {
   expect(check({ age: 30 })).toBe(false);
   expect(check({ name: "John", age: "30" })).toBe(false);
   expect(check("John")).toBe(false);
+  expect(getErrors()).toEqual([
+    {
+      type: "invalid-type",
+      target: "object",
+      path: [],
+    },
+  ]);
 });
 
 it("should validate arrays", () => {
