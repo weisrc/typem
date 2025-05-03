@@ -17,12 +17,11 @@ export class Reply extends Response implements Builtin<"unit"> {
 }
 
 export type Merged<T> = {
-  isUndefined?: boolean;
   fromInput?: [string, any];
   predicate: Predicate<T>;
   schema: JsonSchema<T>;
   inner?: {
-    mode: "union" | "intersection" | "tuple";
+    mode: "union" | "intersection" | "tuple" | "optional"
     types: Merged<any>[];
   };
 };

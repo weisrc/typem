@@ -117,8 +117,15 @@ export function record(key: JsonSchema, value: JsonSchema): JsonSchema {
   });
 }
 
+export function optional(type: JsonSchema): JsonSchema {
+  return () => ({
+    oneOf: [type(), { type: "undefined" }],
+  });
+}
+
 export const env: Env<JsonSchemaMacro, JsonSchema> = {
   entry,
+  optional,
   error,
   array,
   general,

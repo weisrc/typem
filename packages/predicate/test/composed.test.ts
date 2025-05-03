@@ -96,14 +96,8 @@ it("should validate optional properties", () => {
 
   expect(check({ name: "John" })).toBe(true);
   expect(getErrors()).toEqual([]);
-  expect(check({ name: "John", age: undefined })).toBe(false);
-  expect(getErrors()).toEqual([
-    {
-      type: "invalid-type",
-      target: "number",
-      path: ["age"],
-    },
-  ]);
+  expect(check({ name: "John", age: undefined })).toBe(true);
+  expect(getErrors()).toEqual([]);
   expect(check({ age: 30 })).toBe(false);
 });
 

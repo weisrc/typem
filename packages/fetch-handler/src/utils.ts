@@ -22,27 +22,38 @@ export function getPredicateExtractorsWithSchema(
   inputs: Merged<any>[],
   output: Merged<any>
 ) {
-  const outputSchema = output.schema();
+  const { type: unwrappedOutput, optional } = unwrapOptional(output);
 
-  const operationSchema: OperationSchema = !outputSchema
-    ? {}
-    : {
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: output.schema(),
-              },
-            },
-          },
+  const outputSchema = unwrappedOutput.schema();
+
+  const operationSchema: OperationSchema = {};
+
+  if (outputSchema) {
+    operationSchema.responses ??= {};
+    operationSchema.responses["200"] = {
+      description: "OK",
+      content: {
+        "application/json": {
+          schema: outputSchema,
         },
-      };
+      },
+    };
+  }
+
+  if (optional) {
+    operationSchema.responses ??= {};
+    operationSchema.responses["404"] = {
+      description: "Not Found",
+    };
+  }
 
   const predicateExtractors: PredicateExtractor[] = [];
 
   for (const input of inputs) {
-    const [{ fromInput, predicate, schema }, optional] = getNonNull(input);
+    const {
+      type: { fromInput, predicate, schema },
+      optional,
+    } = unwrapOptional(input);
 
     if (!fromInput) {
       throw new Error("fromInput is missing");
@@ -67,18 +78,13 @@ export function getPredicateExtractorsWithSchema(
   return { predicateExtractors, operationSchema };
 }
 
-function getNonNull(type: Merged<any>): [Merged<any>, boolean] {
-  if (type.inner?.mode !== "union") {
-    return [type, false];
+function unwrapOptional(type: Merged<any>): {
+  type: Merged<any>;
+  optional: boolean;
+} {
+  if (type.inner?.mode !== "optional") {
+    return { type, optional: false };
   }
 
-  const filtered = type.inner.types.filter((type) => !type.isUndefined);
-  if (filtered.length === 0) {
-    throw new Error("No non-null types found");
-  }
-  if (filtered.length > 1) {
-    throw new Error("Multiple non-null types found");
-  }
-
-  return [filtered[0], true];
+  return { type: type.inner.types[0], optional: true };
 }

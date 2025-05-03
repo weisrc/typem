@@ -23,6 +23,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-    "exactOptionalPropertyTypes": true
+    "exactOptionalPropertyTypes": false
   }
 }

@@ -11,18 +11,19 @@ import type {
 } from "typem";
 import { jsonSchema } from "../src";
 
-it("it should generate schema", () => {
-  type User = {
-    id: number;
-    name: string & Deprecated;
-    age: number & Minimum<0> & Maximum<100>;
-    email: string;
-    isActive: boolean;
-    friends: User[] & Default<[]> & MaxItems<10>;
-  } & Title<"User"> &
-    Description<"User Schema"> &
-    ReferenceId<"user">;
+type User = {
+  id: number;
+  name: string & Deprecated;
+  age: number & Minimum<0> & Maximum<100>;
+  email: string;
+  isActive: boolean;
+  friends: User[] & Default<[]> & MaxItems<10>;
+  phone?: (string & Deprecated) | undefined;
+} & Title<"User"> &
+  Description<"User Schema"> &
+  ReferenceId<"user">;
 
+it("it should generate schema", () => {
   const getUserSchema = jsonSchema<User>();
 
   expect(getUserSchema()).toEqual({
@@ -41,6 +42,9 @@ it("it should generate schema", () => {
         items: { $ref: "user" },
         default: [],
         maxItems: 10,
+      },
+      phone: {
+        oneOf: [{ type: "string", deprecated: true }, { type: "undefined" }],
       },
     },
     required: ["id", "name", "age", "email", "isActive", "friends"],

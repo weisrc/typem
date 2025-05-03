@@ -8,7 +8,6 @@ export * from "./merged-annotations-env";
 
 export function general(type: GeneralType): Merged<any> {
   return {
-    isUndefined: type === "undefined",
     predicate: predicateEnv.general(type),
     schema: jsonSchemaEnv.general(type),
   };
@@ -137,5 +136,16 @@ export function record(key: Merged<any>, value: Merged<any>): Merged<any> {
   return {
     predicate: predicateEnv.record(key.predicate, value.predicate),
     schema: jsonSchemaEnv.record(key.schema, value.schema),
+  };
+}
+
+export function optional(type: Merged<any>): Merged<any> {
+  return {
+    inner: {
+      mode: "optional",
+      types: [type],
+    },
+    predicate: predicateEnv.optional(type.predicate),
+    schema: jsonSchemaEnv.optional(type.schema),
   };
 }

@@ -16,6 +16,35 @@ it("returns json", async () => {
   expect(await (await helloHandler(req)).json()).toEqual("hello world");
 });
 
+it("returns 404 for undefined", async () => {
+  async function hello(): Promise<undefined | string> {
+    return undefined;
+  }
+  const helloHandler = handler(hello);
+
+  expect(helloHandler.schema).toEqual({
+    responses: {
+      404: {
+        description: "Not Found",
+      },
+      200: {
+        description: "OK",
+        content: {
+          "application/json": {
+            schema: { type: "string" },
+          },
+        },
+      },
+    },
+  });
+
+  const req = new Request("http://localhost:3000/hello");
+  const res = await helloHandler(req);
+  expect(res).toBeInstanceOf(Response);
+  expect(res.status).toEqual(404);
+  expect(await res.text()).toEqual("");
+});
+
 it("returns reply", async () => {
   async function hello() {
     return new Reply("hello world");

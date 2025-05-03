@@ -243,6 +243,10 @@ export function record<K extends string, V>(
   }) as Predicate<Record<K, V>>;
 }
 
+export function optional<T>(type: Predicate<T>): Predicate<T | undefined> {
+  return ((x: any) => x === undefined || type(x)) as Predicate<T | undefined>;
+}
+
 export const env: Env<PredicateMacro, Predicate<any>> = {
   entry,
   error,
@@ -258,4 +262,5 @@ export const env: Env<PredicateMacro, Predicate<any>> = {
   discriminatedUnion,
   tuple,
   callable,
+  optional,
 };

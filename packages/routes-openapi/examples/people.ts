@@ -6,6 +6,7 @@ type Person = {
   id: string;
   name: string;
   age: number;
+  friends: Person[];
 };
 
 const people: Person[] = [];
@@ -51,6 +52,6 @@ const routes = openapi({
 const server = Bun.serve({
   routes,
   port: 8080,
-})
+});
 
 console.log(`listening on port ${server.port}`);

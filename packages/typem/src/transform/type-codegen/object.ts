@@ -54,7 +54,7 @@ function hasExplictUndefined(
     return false;
   }
 
-  const declaration = type.symbol?.declarations?.[0];
+  const declaration = type.getSymbol()?.declarations?.[0];
   if (!declaration || !ts.isUnionTypeNode(declaration)) {
     return false;
   }

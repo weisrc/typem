@@ -40,6 +40,7 @@ export type Env<T, U> = {
   intersection(t: U[]): U;
   recursive(fn: (self: U) => U): U;
   callable(t: U, signatures: [U[], U][]): U;
+  optional(t: U): U;
 } & {
   [key in BuiltinMap[keyof BuiltinMap]]?: (...t: U[]) => U;
 } & {

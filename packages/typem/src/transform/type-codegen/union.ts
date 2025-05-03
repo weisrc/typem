@@ -8,6 +8,26 @@ export function unionCodegen(
   types: ts.Type[],
   typeMap: TypeMap
 ) {
+  let isOptional = false;
+  const filteredTypes: ts.Type[] = [];
+
+  for (const type of types) {
+    if (type.flags & ts.TypeFlags.Undefined) {
+      isOptional = true;
+    } else {
+      filteredTypes.push(type);
+    }
+  }
+
+  const inner = unionCodegenInner(context, filteredTypes, typeMap);
+  return isOptional ? `t.optional(${inner})` : inner;
+}
+
+function unionCodegenInner(
+  context: TransformContext,
+  types: ts.Type[],
+  typeMap: TypeMap
+) {
   let mapped = types.map((t) => typeCodegen(context, t, typeMap));
   if (mapped.includes(LITERAL_TRUE) && mapped.includes(LITERAL_FALSE)) {
     mapped = mapped.filter((e) => e !== LITERAL_TRUE && e !== LITERAL_FALSE);
@@ -92,10 +112,4 @@ function getValuesOfProperty(
   }
 
   return values;
-}
-
-function assert(x: any, message: string): asserts x {
-  if (!x) {
-    throw new Error(message);
-  }
 }

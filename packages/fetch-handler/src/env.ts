@@ -90,9 +90,17 @@ export function entry(
 
     async function handler(req: HandlerRequest) {
       const output = await getHandlerOutput(req);
+
+      if (output === undefined) {
+        return new Response(null, {
+          status: 404,
+        });
+      }
+
       if (output instanceof Response) {
         return output;
       }
+
       return Response.json(output);
     }
 
