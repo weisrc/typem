@@ -1,13 +1,13 @@
 import { expect, it } from "bun:test";
 import {
   handler,
+  registerBaseExtractors,
   Reply,
-  setup,
   type HandlerRequest,
 } from "@typem/fetch-handler";
 import type { Format, FromHeader, FromJson, FromParam, FromQuery } from "typem";
 
-setup();
+registerBaseExtractors();
 
 it("returns json", async () => {
   async function hello() {

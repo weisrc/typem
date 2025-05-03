@@ -1,4 +1,4 @@
-import { handler, setup } from "@typem/fetch-handler";
+import { handler, registerBaseExtractors } from "@typem/fetch-handler";
 import { openapi } from "@typem/routes-openapi";
 import type { FromJson, FromParam, FromQuery } from "typem";
 
@@ -37,7 +37,7 @@ function getPerson(id: string & FromParam<"id">) {
   return people.find((p) => p.id === id);
 }
 
-setup();
+registerBaseExtractors();
 
 const routes = openapi({
   "/people": {

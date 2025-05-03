@@ -1,4 +1,2 @@
-preload = ["typem/bun-preload"]
-
 [test]
 preload = ["typem/bun-preload"]

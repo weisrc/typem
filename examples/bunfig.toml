@@ -1,2 +1,1 @@
-[test]
 preload = ["typem/bun-preload"]

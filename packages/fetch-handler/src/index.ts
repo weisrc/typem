@@ -13,10 +13,12 @@ export * from "./types";
 
 export const handler = macro<FetchHandlerMacro, "@typem/fetch-handler/env">();
 
-export function setup() {
+export function registerBaseExtractors() {
   registerExtractor(queryExtractor);
   registerExtractor(headerExtractor);
   registerExtractor(paramExtractor);
   registerExtractor(jsonExtractor);
   registerExtractor(requestExtractor);
 }
+
+export { unregisterExtractor, registerExtractor } from "./context";
