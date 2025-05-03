@@ -247,7 +247,7 @@ export function optional<T>(type: Predicate<T>): Predicate<T | undefined> {
   return ((x: any) => x === undefined || type(x)) as Predicate<T | undefined>;
 }
 
-export const env: Env<PredicateMacro, Predicate<any>> = {
+const env: Env<PredicateMacro, Predicate<any>> = {
   entry,
   error,
   array,

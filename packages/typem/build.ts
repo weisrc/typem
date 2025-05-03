@@ -10,5 +10,5 @@ Bun.build({
   format: "esm",
   splitting: true,
   target: "node",
-  external: ["bun", "typescript"],
+  packages: "external",
 });

@@ -1,7 +1,8 @@
 {
-  "name": "monorepo",
-  "version": "1.0.0",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
 }

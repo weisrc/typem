@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { getErrors, predicate, withErrors } from "../src";
+import { getErrors, predicate, withErrors } from "@typem/predicate";
 
 it("should validate numbers", () => {
   const isNumber = withErrors(predicate<number>());

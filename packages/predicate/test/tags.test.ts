@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { predicate } from "../src";
+import { predicate } from "@typem/predicate";
 import type {
   AdditionalProperties,
   ExclusiveMaximum,

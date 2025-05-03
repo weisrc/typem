@@ -1,6 +1,6 @@
 import { it, expect } from "bun:test";
 
-import { getErrors, predicate, withErrors } from "../src";
+import { getErrors, predicate, withErrors } from "@typem/predicate";
 
 it("should validate 1-cycle", () => {
   type Tree = {

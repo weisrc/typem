@@ -18,3 +18,17 @@ export function withErrors<T>(is: Predicate<T>): Predicate<T> {
 export function getErrors() {
   return context.errors;
 }
+
+export function strict<T>(is: Predicate<T>): Predicate<T> {
+  return (x: any) => {
+    const previous = context.additionalProperties;
+    context.additionalProperties = false;
+    const result = is(x);
+    context.additionalProperties = previous;
+    return result;
+  };
+}
+
+export function useStrict() {
+  context.additionalProperties = false;
+}

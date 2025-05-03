@@ -9,7 +9,7 @@ import type {
   ReferenceId,
   Title,
 } from "typem";
-import { jsonSchema } from "../src";
+import { jsonSchema } from "@typem/json-schema";
 
 type User = {
   id: number;
