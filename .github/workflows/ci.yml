@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install
+      - run: bun run build
+      - run: bun run test
+      - run: |
+          bun run docs:api
+          bun run docs:build
+          git add -f docs
+      
+      - name: Push
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "$MESSAGE"
+          git push -f origin main:ci
+          

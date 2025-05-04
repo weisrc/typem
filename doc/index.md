@@ -9,10 +9,10 @@ hero:
   actions:
     - theme: brand
       text: What is Typem?
-      link: /guide/overview
+      link: /overview
     - theme: alt
       text: Get Started
-      link: /guide/getting-started
+      link: /asdf
     - theme: alt
       text: GitHub
       link: https://github.com/weisrc/typem

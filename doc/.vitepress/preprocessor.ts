@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { Plugin } from "vitepress";
 
 type PreprocessorOptions = {
-  links?: Record<string, string>;
+  replace?: Record<string, string>;
 };
 
 export function preprocessor(options: PreprocessorOptions): Plugin {
@@ -25,12 +25,9 @@ export function preprocessor(options: PreprocessorOptions): Plugin {
           }
         });
 
-        if (options.links) {
-          for (const [key, value] of Object.entries(options.links)) {
-            const pattern = new RegExp(`\\b(${key})\\b`, "g");
-            code = code.replace(pattern, (match, capture) => {
-              return match.replace(capture, `[${capture}](${value})`);
-            });
+        if (options.replace) {
+          for (const [key, value] of Object.entries(options.replace)) {
+            code = code.replaceAll(key, value);
           }
         }
 

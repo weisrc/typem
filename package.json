@@ -3,11 +3,15 @@
     "packages/*"
   ],
   "devDependencies": {
+    "typedoc": "^0.28.4",
+    "typedoc-plugin-markdown": "^4.6.3",
+    "typedoc-vitepress-theme": "^1.1.2",
     "vitepress": "^1.6.3"
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
     "test": "bun run scripts/test.ts",
+    "docs:api": "typedoc; rm -rf doc/api; mv api doc/api",
     "docs:dev": "vitepress dev doc",
     "docs:build": "vitepress build doc",
     "docs:preview": "vitepress preview doc"

@@ -1,0 +1,9 @@
+{
+  "entryPoints": [
+    "./packages/typem/src/index.ts",
+    "./packages/typem/src/macro.ts",
+    "./packages/predicate/src/index.ts",
+  ],
+  "out": "./api",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"]
+}
