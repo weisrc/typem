@@ -1,6 +1,7 @@
 import { it, expect } from "bun:test";
 
 import { getErrors, predicate, withErrors } from "@typem/predicate";
+import type { Minimum } from "typem";
 
 it("should validate 1-cycle", () => {
   type Tree = {
@@ -112,4 +113,27 @@ it("should fail for bad recursive data", () => {
       path: ["value"],
     },
   ]);
+});
+
+it("works for the graph example", () => {
+  type Vertex = {
+    label: number & Minimum<1>;
+    neighbors: Vertex[];
+  };
+
+  const a: Vertex = { label: 1, neighbors: [] };
+  const b: Vertex = { label: 2, neighbors: [] };
+  const c: Vertex = { label: 3, neighbors: [] };
+  a.neighbors.push(b, c);
+  b.neighbors.push(a, c);
+  c.neighbors.push(a, b);
+
+  const isNode = withErrors(predicate<Vertex>());
+
+  expect(isNode(a)).toBe(true);
+  expect(getErrors()).toBeEmpty();
+
+  b.label = 0;
+  expect(isNode(a)).toBe(false);
+  expect(getErrors()).toEqual([]);
 });

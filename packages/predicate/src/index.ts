@@ -9,9 +9,16 @@ export function withErrors<T>(is: Predicate<T>): Predicate<T> {
   return (x: any) => {
     context.enableErrors = true;
     context.errors = [];
-    const result = is(x);
-    context.enableErrors = false;
-    return result;
+    try {
+      const result = is(x);
+      context.enableErrors = false;
+      return result;
+    } catch (e) {
+      context.errors = [];
+      context.path = [];
+      context.enableErrors = false;
+      throw e;
+    }
   };
 }
 

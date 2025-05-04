@@ -14,6 +14,7 @@
     "docs:api": "typedoc; rm -rf doc/api; mv api doc/api",
     "docs:dev": "vitepress dev doc",
     "docs:build": "vitepress build doc",
-    "docs:preview": "vitepress preview doc"
+    "docs:preview": "vitepress preview doc",
+    "copy-license": "bun run scripts/copy-license.ts"
   }
 }

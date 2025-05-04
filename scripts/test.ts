@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import "./build";
 
 async function runTests() {
   const packages = [

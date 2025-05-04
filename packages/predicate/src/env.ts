@@ -163,22 +163,22 @@ export function recursive<T>(
   fn: (self: Predicate<T>) => Predicate<T>
 ): Predicate<T> {
   let type: Predicate<T>;
+
   const inner = (x: any) => {
-    if (visited.has(type)) {
-      const set = visited.get(type)!;
+    let set = visited.get(type);
+
+    if (set) {
       if (set.has(x)) {
         return true;
       }
+    } else {
+      set = new WeakSet();
+      visited.set(type, set);
     }
-
-    if (!visited.has(type)) {
-      visited.set(type, new WeakSet());
-    }
-    const set = visited.get(type)!;
     set.add(x);
-
     return type(x);
   };
+
   type = fn(inner as Predicate<T>);
   return type;
 }

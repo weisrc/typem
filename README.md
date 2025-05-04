@@ -13,6 +13,7 @@ It comes with a set of packages to help you create type-safe code with less boil
 - [Routes OpenAPI](https://weisrc.github.io/typem/routes-openapi) to create OpenAPI documentation for your routes.
 
 The following packages are planned for the future:
+- `@typem/preset` to create default values for a type.
 - `@typem/binary` for Binary serialization and deserialization.
 - `@typem/drizzle` for Drizzle ORM support.
 
