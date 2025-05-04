@@ -14,10 +14,10 @@ a.neighbors.push(b, c);
 b.neighbors.push(a, c);
 c.neighbors.push(a, b);
 
-const isNode = withErrors(predicate<Vertex>());
-assert(isNode(a) === true);
+const isVertex = withErrors(predicate<Vertex>());
+assert(isVertex(a) === true);
 b.label = 0;
-assert(isNode(a) === false); // false since 0 violates minimum of 1
+assert(isVertex(a) === false); // false since 0 violates minimum of 1
 console.log(getErrors());
 /*
 [

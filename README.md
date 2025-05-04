@@ -17,6 +17,12 @@ The following packages are planned for the future:
 - `@typem/binary` for Binary serialization and deserialization.
 - `@typem/drizzle` for Drizzle ORM support.
 
+ If you have ideas for new packages of functionality, please open an issue on the GitHub Repository.
+
+## Objective
+
+The ideal scenario is to use a single annotated type for various tasks such as validation, JSON schema generation, serialization, database schema creation, and more. However, achieving this in all cases may not be feasible. This project aims to bring us a step closer to that goal with less boilerplate code and tree-shaking in mind.
+
 ## Installation
 
 `typem` should be installed as a dependency. See the individual package documentation for installation instructions.
@@ -40,4 +46,4 @@ preload = ["typem/bun-preload"]
 > There is no support for the TypeScript compiler yet. You can use Bun or bundle your code with Rollup or Vite.
 
 ## License
-This project is licensed under the MIT License. If you have any ideas for new packages, please open an issue on the GitHub Repository. Also, contributions are welcome!
+This project is licensed under the MIT License. Contributions are welcome!

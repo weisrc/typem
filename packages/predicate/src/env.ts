@@ -61,24 +61,31 @@ export function object<T extends object>(
   shape: {
     [key in keyof T]: Predicate<T[key]>;
   },
-  required: string[]
+  required: (keyof T)[]
 ): Predicate<T> {
   return ((x: any) => {
     if (typeof x !== "object" || x === null) {
       errorAdd("invalid-type", "object");
       return false;
     }
+    let ok = true;
     for (const key of required) {
       if (!(key in x)) {
         errorAdd("missing-property", key);
-        return false;
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
     if (!context.additionalProperties) {
       for (const key in x) {
         if (!(key in shape)) {
           errorAdd("additional-property", key);
-          return false;
+          ok = false;
+          if (context.firstErrorOnly) {
+            return ok;
+          }
         }
       }
     }
@@ -86,32 +93,43 @@ export function object<T extends object>(
       if (!(key in x)) {
         continue;
       }
+      const previous = context.additionalProperties;
+      context.additionalProperties = context.defaultAdditionalProperties;
       errorPathPush(key);
-      const ok = shape[key](x[key]);
+      const innerOk = shape[key](x[key]);
       errorPathPop();
-      if (!ok) {
-        return false;
+      context.additionalProperties = previous;
+      if (!innerOk) {
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
-    return true;
+    return ok;
   }) as Predicate<T>;
 }
 
 export function array<T>(type: Predicate<T>): Predicate<T[]> {
   return ((x: any) => {
     if (!Array.isArray(x)) {
+      errorAdd("invalid-type", "array");
       return false;
     }
+    let ok = true;
     for (let i = 0; i < x.length; i++) {
       const item = x[i];
       errorPathPush(i);
-      const ok = type(item);
+      const innerOk = type(item);
       errorPathPop();
-      if (!ok) {
-        return false;
+      if (!innerOk) {
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
-    return true;
+    return ok;
   }) as Predicate<T[]>;
 }
 
@@ -151,12 +169,16 @@ export function discriminatedUnion<T>(
 
 export function intersection<T>(types: Predicate<T>[]): Predicate<T> {
   const inner = (x: any) => {
+    let ok = true;
     for (const type of types) {
       if (!type(x)) {
-        return false;
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
-    return true;
+    return ok;
   };
   return additionalProperties(inner as Predicate<any>, true) as Predicate<T>;
 }
@@ -196,15 +218,19 @@ export function tuple<T extends any[]>(
       errorAdd("invalid-size", types.length);
       return false;
     }
+    let ok = true;
     for (let i = 0; i < types.length; i++) {
       errorPathPush(i);
-      const ok = types[i](x[i]);
+      const innerOk = types[i](x[i]);
       errorPathPop();
-      if (!ok) {
-        return false;
+      if (!innerOk) {
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
-    return true;
+    return ok;
   }) as Predicate<T>;
 }
 
@@ -221,6 +247,8 @@ export function record<K extends string, V>(
     if (!isObject(x)) {
       return false;
     }
+    let ok = true;
+
     for (const k in x) {
       errorPathPush(k);
       errorPathPush(true);
@@ -229,7 +257,11 @@ export function record<K extends string, V>(
       errorPathPop();
 
       if (!keyOk) {
-        return false;
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
+        continue;
       }
 
       errorPathPush(k);
@@ -237,10 +269,13 @@ export function record<K extends string, V>(
       errorPathPop();
 
       if (!valueOk) {
-        return false;
+        ok = false;
+        if (context.firstErrorOnly) {
+          return ok;
+        }
       }
     }
-    return true;
+    return ok;
   }) as Predicate<Record<K, V>>;
 }
 

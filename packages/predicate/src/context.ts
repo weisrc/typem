@@ -1,7 +1,9 @@
 import type { Predicate } from ".";
 
 export type Context = {
+  firstErrorOnly: boolean;
   additionalProperties: boolean;
+  defaultAdditionalProperties: boolean;
   enableErrors: boolean;
   path: (string | number | boolean)[];
   errors: ValidationError[];
@@ -29,6 +31,8 @@ export type ValidationErrorType =
   | "min-properties";
 
 export const context: Context = {
+  firstErrorOnly: true,
+  defaultAdditionalProperties: true,
   additionalProperties: true,
   enableErrors: false,
   path: [],
@@ -37,7 +41,14 @@ export const context: Context = {
 };
 
 export function resetVisited() {
-  context.visited = new WeakMap<Predicate<any>, WeakSet<any>>()
+  context.visited = new WeakMap<Predicate<any>, WeakSet<any>>();
+}
+
+export function resetContext() {
+  context.additionalProperties = context.defaultAdditionalProperties;
+  context.enableErrors = false;
+  context.path = [];
+  context.errors = [];
 }
 
 export type ValidationError = {

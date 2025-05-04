@@ -22,20 +22,15 @@ export default defineConfig({
         ],
       },
       {
-        text: "Predicate",
-        link: "/predicate",
-        items: [],
+        text: "Packages",
+        items: [
+          { text: "Predicate", link: "/predicate" },
+          { text: "JSON Schema", link: "/json-schema" },
+          { text: "Routes OpenAPI", link: "/routes-openapi" },
+          { text: "Typem", link: "/typem" },
+        ],
       },
-      {
-        text: "JSON Schema",
-        link: "/json-schema",
-        items: [],
-      },
-      {
-        text: "Routes OpenAPI",
-        link: "/routes-openapi",
-        items: [],
-      },
+
       {
         text: "API",
         items: apiSidebar,

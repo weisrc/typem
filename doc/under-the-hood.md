@@ -29,4 +29,4 @@ In this case, the virual module imports `@typem/predicate/env` because the type 
 The code generation is only based on the type information. So, it is not possible to use the transformer to generate arbitrary code at compile time. However, this makes implementing macros for types straightforward as one only needs to make sure to implement all required functions instead of tackling with the underlying TypeScript compiler datatypes.
 
 > [!TIP]
-> You can see the generated code by setting the `TYPEM_DEBUG` environment variable to `true`.
+> The generated and transformed code will be logged in the terminal by setting the `TYPEM_DEBUG` environment variable to `true`.

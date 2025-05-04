@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { predicate } from "@typem/predicate";
+import { predicate, setDefaultAdditionalProperties } from "@typem/predicate";
 import type {
   AdditionalProperties,
   ExclusiveMaximum,
@@ -135,6 +135,20 @@ it("validate annotation additionalProperties", () => {
   expect(check2({ a: 1 })).toBe(true);
   expect(check1({})).toBe(false);
   expect(check2({})).toBe(false);
+});
+
+it("validate annotation additionalProperties with nested objects", () => {
+  const check = predicate<
+    { a: number; b: { c: number } } & AdditionalProperties<false>
+  >();
+
+  expect(check({ a: 1, b: { c: 2 } })).toBe(true);
+  expect(check({ a: 1, b: { c: 2, d: 3 } })).toBe(true);
+  expect(check({ a: 1, b: { c: 2 }, d: 3 })).toBe(false);
+
+  setDefaultAdditionalProperties(false);
+  expect(check({ a: 1, b: { c: 2, d: 3 } })).toBe(false);
+  setDefaultAdditionalProperties(true);
 });
 
 it("validate annotation minimum and exclusiveMaximum", () => {
