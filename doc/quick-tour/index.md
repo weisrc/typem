@@ -1,6 +1,9 @@
 ---
 title: Quick Tour
 description: Quick Tour of Typem
+next:
+    text: Under the Hood
+    link: /under-the-hood
 ---
 
 # Quick Tour

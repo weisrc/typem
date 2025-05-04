@@ -83,9 +83,10 @@ export function augmentNode(
 
   replaceNodeText(context, node, id);
 
-  const moduleId = randomString(16);
+  const moduleId = "virtual:typem-" + randomString(16);
   context.raw += `\nimport ${id} from "${moduleId}";`;
 
+  debug("Trasnformed source", context.raw);
   debug("Augmenting node", node.getText(), "with:\n", codegen);
   context.addModule(moduleId, codegen);
 }

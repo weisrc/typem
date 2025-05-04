@@ -16,15 +16,25 @@ export default defineConfig({
         text: "Overview",
         link: "/overview",
 
-        items: [{ text: "Quick Tour", link: "/quick-tour" }],
+        items: [
+          { text: "Quick Tour", link: "/quick-tour" },
+          { text: "Under the Hood", link: "/under-the-hood" },
+        ],
       },
       {
         text: "Predicate",
         link: "/predicate",
-        items: [
-          { text: "Markdown Examples", link: "/markdown-examples" },
-          { text: "Runtime API Examples", link: "/api-examples" },
-        ],
+        items: [],
+      },
+      {
+        text: "JSON Schema",
+        link: "/json-schema",
+        items: [],
+      },
+      {
+        text: "Routes OpenAPI",
+        link: "/routes-openapi",
+        items: [],
       },
       {
         text: "API",

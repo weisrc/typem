@@ -1,4 +1,5 @@
 import { getErrors, predicate, withErrors } from "@typem/predicate";
+import assert from "assert";
 import type { Minimum } from "typem";
 
 type Vertex = {
@@ -14,7 +15,16 @@ b.neighbors.push(a, c);
 c.neighbors.push(a, b);
 
 const isNode = withErrors(predicate<Vertex>());
-console.log(isNode(a)); // true
+assert(isNode(a) === true);
 b.label = 0;
-console.log(isNode(a)); // false since 0 violates minimum of 1
+assert(isNode(a) === false); // false since 0 violates minimum of 1
 console.log(getErrors());
+/*
+[
+  {
+    type: "minimum",
+    target: 1,
+    path: [ "neighbors", 0, "label" ],
+  }
+]
+*/

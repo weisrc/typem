@@ -163,3 +163,24 @@ it("should validate record types", () => {
     },
   ]);
 });
+
+it("should discriminate for pet example", () => {
+  type Dog = {
+    type: "dog";
+    breed: "bulldog" | "beagle" | "poodle";
+    age: number;
+  };
+
+  type Cat = {
+    type: "cat";
+    breed: "persian" | "siamese" | "maine";
+    age: number;
+  };
+
+  type Pet = Dog | Cat;
+
+  const isPet = predicate<Pet>();
+  expect(isPet({ type: "dog", breed: "bulldog", age: 5 })).toBe(true);
+  expect(isPet({ type: "dog", breed: "bulldog", age: "5" })).toBe(false);
+  expect(isPet({ type: "cat", breed: "bulldog" })).toBe(false);
+});

@@ -1,5 +1,6 @@
 import type { Format, Maximum, Minimum, Pattern } from "typem";
 import { predicate } from "@typem/predicate";
+import assert from "assert";
 
 type User = {
   id: string & Format<"uuid">;
@@ -21,4 +22,4 @@ const alice = {
   friends: [],
 };
 
-console.log(isUser(alice)); // true
+assert(isUser(alice) === true);

@@ -44,9 +44,11 @@ function unionCodegenInner(
 
   if (discriminant) {
     const [path, values] = discriminant;
-    const pathText = JSON.stringify(path);
-    const valuesText = JSON.stringify(values);
-    return `t.discriminatedUnion(${pathText}, ${valuesText}, [${joined}])`;
+    if (values.length === mapped.length) {
+      const pathText = JSON.stringify(path);
+      const valuesText = JSON.stringify(values);
+      return `t.discriminatedUnion(${pathText}, ${valuesText}, [${joined}])`;
+    }
   }
 
   return `t.union([${joined}])`;
@@ -80,7 +82,7 @@ function getDiscriminants(context: TransformContext, types: ts.Type[]) {
 
   for (const prop of commonProperties) {
     const values = getValuesOfProperty(context, types, prop);
-    if (values) {
+    if (values && values.length > 0) {
       output.push([prop, values]);
     }
   }

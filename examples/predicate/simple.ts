@@ -1,11 +1,12 @@
 import { predicate, withErrors, getErrors } from "@typem/predicate";
+import { assert } from "console";
 
 const isString = predicate<string>();
-console.log(isString("hello")); // true
+assert(isString("hello") === true);
 
 const isStringWithErrors = withErrors(isString);
-console.log(isStringWithErrors("hello")); // true
-console.log(isStringWithErrors(123)); // false
+assert(isStringWithErrors("hello") === true);
+assert(isStringWithErrors(123) === false);
 console.log(getErrors());
 /*
 [
