@@ -1,15 +1,11 @@
+import type { Predicate } from ".";
+
 export type Context = {
   additionalProperties: boolean;
   enableErrors: boolean;
   path: (string | number | boolean)[];
   errors: ValidationError[];
-};
-
-export const context: Context = {
-  additionalProperties: true,
-  enableErrors: false,
-  path: [],
-  errors: [],
+  visited: WeakMap<Predicate<any>, WeakSet<any>>;
 };
 
 export type ValidationErrorType =
@@ -31,6 +27,18 @@ export type ValidationErrorType =
   | "min-length"
   | "max-properties"
   | "min-properties";
+
+export const context: Context = {
+  additionalProperties: true,
+  enableErrors: false,
+  path: [],
+  errors: [],
+  visited: new WeakMap<Predicate<any>, WeakSet<any>>(),
+};
+
+export function resetVisited() {
+  context.visited = new WeakMap<Predicate<any>, WeakSet<any>>()
+}
 
 export type ValidationError = {
   type: ValidationErrorType;

@@ -7,11 +7,15 @@ import {
   errorPathPush,
   errorAdd,
   errorClear,
+  resetVisited,
 } from "./context";
 export * from "./annotations-env";
 
 export function entry<T>(t: Predicate<T>) {
-  return (() => t) as PredicateMacro;
+  return (() => (x) => {
+    resetVisited();
+    return t(x);
+  }) as PredicateMacro;
 }
 
 export function error(message: string): any {
@@ -157,23 +161,20 @@ export function intersection<T>(types: Predicate<T>[]): Predicate<T> {
   return additionalProperties(inner as Predicate<any>, true) as Predicate<T>;
 }
 
-const visited = new WeakMap<Predicate<any>, WeakSet<any>>();
-
 export function recursive<T>(
   fn: (self: Predicate<T>) => Predicate<T>
 ): Predicate<T> {
   let type: Predicate<T>;
 
   const inner = (x: any) => {
-    let set = visited.get(type);
-
+    let set = context.visited.get(type);
     if (set) {
       if (set.has(x)) {
         return true;
       }
     } else {
       set = new WeakSet();
-      visited.set(type, set);
+      context.visited.set(type, set);
     }
     set.add(x);
     return type(x);

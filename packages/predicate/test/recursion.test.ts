@@ -135,5 +135,11 @@ it("works for the graph example", () => {
 
   b.label = 0;
   expect(isNode(a)).toBe(false);
-  expect(getErrors()).toEqual([]);
+  expect(getErrors()).toEqual([
+    {
+      path: ["neighbors", 0, "label"],
+      target: 1,
+      type: "minimum",
+    },
+  ]);
 });
