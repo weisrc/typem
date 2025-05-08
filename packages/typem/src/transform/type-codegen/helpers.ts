@@ -21,7 +21,7 @@ export function builtinCodegen(
   return `t.${name} ? t.${name}(${inner}) : ${error}`;
 }
 
-export function getAnnotation(context: TransformContext, type: ts.Type) {
+export function getAnnotations(context: TransformContext, type: ts.Type) {
   return getMarker(context, type, "__annotation");
 }
 
@@ -30,7 +30,7 @@ export function splitAnnotations(context: TransformContext, types: ts.Type[]) {
   const rest: ts.Type[] = [];
 
   for (const type of types) {
-    const annotation = getAnnotation(context, type);
+    const annotation = getAnnotations(context, type);
     if (annotation) {
       Object.assign(annotations, annotation);
     } else {
@@ -66,7 +66,10 @@ export function annotatedIntersectionCodegen(
   typeMap: TypeMap
 ) {
   const { annotations, rest } = splitAnnotations(context, types);
-  return wrapWithAnnotations(annotations, intersectionCodegen(context, rest, typeMap));
+  return wrapWithAnnotations(
+    annotations,
+    intersectionCodegen(context, rest, typeMap)
+  );
 }
 
 export function wrapWithAnnotations(
@@ -90,4 +93,27 @@ export function intersectionCodegen(
     return inner[0];
   }
   return `t.intersection([${inner}])`;
+}
+
+export function tryParseJSON(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+export function getAnnotationsFromJsDoc(
+  context: TransformContext,
+  prop: ts.Symbol
+): Record<string, unknown> {
+  const annotationEntries = prop.getJsDocTags(context.checker).map((tag) => {
+    const value = tag.text
+      ? tryParseJSON(tag.text.map((t) => t.text).join(" "))
+      : true;
+    const key = tag.name === "default" ? "defaultValue" : tag.name;
+    return [key, value] as const;
+  });
+
+  return Object.fromEntries(annotationEntries);
 }

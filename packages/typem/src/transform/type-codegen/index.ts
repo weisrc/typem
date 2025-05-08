@@ -10,7 +10,7 @@ import {
 } from "./common";
 import {
   builtinCodegen,
-  getAnnotation,
+  getAnnotations,
   annotatedIntersectionCodegen,
   signaturesCodegen,
   wrapWithAnnotations,
@@ -47,13 +47,13 @@ function innerCodegen(
   type: ts.Type,
   typeMap: TypeMap
 ) {
-  const annotation = getAnnotation(context, type);
+  const annotations = getAnnotations(context, type);
 
-  debug("annotation", annotation);
-  if (annotation && "builtin" in annotation) {
-    const inner = builtinCodegen(context, annotation.builtin, type, typeMap);
-    delete annotation.builtin;
-    return wrapWithAnnotations(annotation, inner);
+  debug("annotations", annotations);
+  if (annotations && "builtin" in annotations) {
+    const inner = builtinCodegen(context, annotations.builtin, type, typeMap);
+    delete annotations.builtin;
+    return wrapWithAnnotations(annotations, inner);
   }
 
   const typeName = context.checker.typeToString(type);
@@ -84,7 +84,7 @@ function innerCodegen(
     return builtinCodegen(context, bultinName, type, typeMap);
   }
 
-  if (annotation) {
+  if (annotations) {
     return `t.error("annotation not in intersection")`;
   }
 
