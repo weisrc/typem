@@ -4,6 +4,7 @@ import type {
   Default,
   Deprecated,
   Description,
+  Example,
   Examples,
   ExclusiveMaximum,
   ExclusiveMinimum,
@@ -205,4 +206,12 @@ export const examples: AnnotationHandler<Examples<any[]>, Merged<any>> = (
 ) => ({
   predicate: inner.predicate,
   schema: jsonSchemaEnv.examples(inner.schema, examples),
+});
+
+export const example: AnnotationHandler<Example<any>, Merged<any>> = (
+  inner,
+  examples
+) => ({
+  predicate: inner.predicate,
+  schema: jsonSchemaEnv.example(inner.schema, examples),
 });

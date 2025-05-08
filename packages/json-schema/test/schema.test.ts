@@ -18,7 +18,13 @@ type User = {
   email: string;
   isActive: boolean;
   friends: User[] & Default<[]> & MaxItems<10>;
-  phone?: (string & Deprecated) | undefined;
+  /**
+   * @title Phone
+   * @description User's phone number
+   * @deprecated
+   * @example "123-456-7890"
+   */
+  phone?: string;
 } & Title<"User"> &
   Description<"User Schema"> &
   ReferenceId<"user">;
@@ -44,7 +50,11 @@ it("it should generate schema", () => {
         maxItems: 10,
       },
       phone: {
-        oneOf: [{ type: "string", deprecated: true }, { type: "undefined" }],
+        oneOf: [{ type: "string" }, { type: "undefined" }],
+        title: "Phone",
+        description: "User's phone number",
+        deprecated: true,
+        examples: ["123-456-7890"],
       },
     },
     required: ["id", "name", "age", "email", "isActive", "friends"],

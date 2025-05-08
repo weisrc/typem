@@ -52,6 +52,7 @@ export type ReferenceId<Id extends string> = Annotation<"referenceId", Id>;
 export type Title<Text extends string> = Annotation<"title", Text>;
 export type Description<Text extends string> = Annotation<"description", Text>;
 export type Default<Value> = Annotation<"defaultValue", Value>;
+export type Example<Value> = Annotation<"example", Value>;
 export type Examples<Values extends any[]> = Annotation<"examples", Values>;
 export type Deprecated = Annotation<"deprecated", true>;
 export type ReadOnly = Annotation<"readOnly", true>;

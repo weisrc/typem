@@ -4,6 +4,15 @@ import { MODIFIER_MAP } from "../../constants";
 import { type TransformContext } from "../context";
 import { type TypeMap } from "./common";
 import { unionCodegen } from "./union";
+import { wrapWithAnnotations } from "./helpers";
+
+function tryParseJSON(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
 
 export function objectCodegen(
   context: TransformContext,
@@ -25,6 +34,16 @@ export function objectCodegen(
     for (const modifier of modifiers) {
       inner = `(t.${modifier} ?? (x => x))(${inner})`;
     }
+
+    const annotationEntries = prop.getJsDocTags(context.checker).map((tag) => {
+      const value = tag.text
+        ? tryParseJSON(tag.text.map((t) => t.text).join(" "))
+        : true;
+      const key = tag.name === "default" ? "defaultValue" : tag.name;
+      return [key, value] as const;
+    });
+
+    inner = wrapWithAnnotations(Object.fromEntries(annotationEntries), inner);
 
     return `${JSON.stringify(prop.name)}: ${inner}`;
   });

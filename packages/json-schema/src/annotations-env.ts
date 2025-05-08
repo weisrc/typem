@@ -3,6 +3,7 @@ import type {
   Default,
   Deprecated,
   Description,
+  Example,
   Examples,
   ExclusiveMaximum,
   ExclusiveMinimum,
@@ -180,3 +181,14 @@ export const examples: AnnotationHandler<Examples<any[]>, JsonSchema> =
     ...inner(),
     examples,
   });
+
+export const example: AnnotationHandler<Example<any>, JsonSchema> =
+  (inner, example) => () => {
+    const out = { ...inner() };
+    if (out.examples) {
+      out.examples.push(example);
+    } else {
+      out.examples = [example];
+    }
+    return out;
+  };
