@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./chunks/framework.fdeNJTK-.js";const i=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"typem.md","filePath":"typem.md"}'),r={name:"typem.md"};function o(s,c,n,p,m,_){return a(),t("div")}const f=e(r,[["render",o]]);export{i as __pageData,f as default};

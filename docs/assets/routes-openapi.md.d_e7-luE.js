@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./chunks/framework.fdeNJTK-.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"routes-openapi.md","filePath":"routes-openapi.md"}'),o={name:"routes-openapi.md"};function r(s,n,p,c,i,_){return a(),t("div")}const f=e(o,[["render",r]]);export{m as __pageData,f as default};

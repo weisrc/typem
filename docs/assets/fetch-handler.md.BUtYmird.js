@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./chunks/framework.fdeNJTK-.js";const p=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"fetch-handler.md","filePath":"fetch-handler.md"}'),r={name:"fetch-handler.md"};function c(n,o,s,d,f,h){return a(),t("div")}const _=e(r,[["render",c]]);export{p as __pageData,_ as default};
