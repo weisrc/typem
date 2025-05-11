@@ -15,7 +15,6 @@ export default defineConfig({
       {
         text: "Overview",
         link: "/overview",
-
         items: [
           { text: "Quick Tour", link: "/quick-tour" },
           { text: "Under the Hood", link: "/under-the-hood" },
@@ -26,7 +25,11 @@ export default defineConfig({
         items: [
           { text: "Predicate", link: "/predicate" },
           { text: "JSON Schema", link: "/json-schema" },
+          { text: "Fetch Handler", link: "/fetch-handler" },
           { text: "Routes OpenAPI", link: "/routes-openapi" },
+          { text: "Reflect", link: "/reflect" },
+          { text: "Preset", link: "/preset" },
+          { text: "Binary", link: "/binary" },
           { text: "Typem", link: "/typem" },
         ],
       },

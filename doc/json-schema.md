@@ -1,13 +1,11 @@
 ---
 title: JSON Schema
-description: Generate JSON schema from TypeScript types
-layout: doc
-next: /routes-openapi
+description: Generate JSON schema from TypeScript types.
 ---
 
 # {{ $frontmatter.title }}
-
-Generate JSON schema from TypeScript types. It supports all JSON Schema related annotations from the `typem` package.
+{{ $frontmatter.description }}
+It supports all JSON Schema related annotations from the `typem` package.
 
 ```ts
 %include "@examples/json-schema/user.ts"%

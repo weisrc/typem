@@ -13,10 +13,9 @@ It comes with a set of packages to help you create type-safe code with less boil
 - [Routes OpenAPI](https://weisrc.github.io/typem/routes-openapi) to create OpenAPI documentation for your routes.
 
 The following packages are planned for the future:
-- `@typem/reflect` to reflect and run custom runtime macros.
-- `@typem/preset` to create default values for a type.
-- `@typem/binary` for Binary serialization and deserialization.
-- `@typem/drizzle` for Drizzle ORM support.
+- [Reflect](https://weisrc.github.io/typem/reflect) to reflect and run custom runtime macros.
+- [Preset](https://weisrc.github.io/typem/preset) to create default values for a type.
+- [Binary](https://weisrc.github.io/typem/binary) for binary serialization and deserialization.
 
  If you have ideas for new packages of functionality, please open an issue on the GitHub Repository.
 

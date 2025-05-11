@@ -1,13 +1,12 @@
 ---
 title: Predicate
-description: Validate the value using TypeScript types
-layout: doc
-next: /json-schema
+description: Validate the value using TypeScript types.
 ---
 
-# Predicate
+# {{ $frontmatter.title }}
 
-Validate values using TypeScript types.  It supports all JSON Schema related annotations from the `typem` package.
+{{ $frontmatter.description }}
+It supports all JSON Schema related annotations from the `typem` package.
 
 ```ts
 %include "@examples/predicate/user.ts"%
