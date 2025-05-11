@@ -16,6 +16,7 @@ Validate values using TypeScript types. It is also possible to get the first err
 
 ::: details Show the User example
 In the below example, `User.id` is a string and it must be a UUID as specified by `Format<"uuid">` annotation.
+Notice that JSDoc can also be used as seen with `@format`.
 ```ts
 %include "@examples/predicate/user.ts"%
 ```

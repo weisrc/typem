@@ -118,9 +118,7 @@ export function record(key: JsonSchema, value: JsonSchema): JsonSchema {
 }
 
 export function optional(type: JsonSchema): JsonSchema {
-  return () => ({
-    oneOf: [type(), { type: "undefined" }],
-  });
+  return type;
 }
 
 export const env: Env<JsonSchemaMacro, JsonSchema> = {

@@ -50,7 +50,7 @@ it("it should generate schema", () => {
         maxItems: 10,
       },
       phone: {
-        oneOf: [{ type: "string" }, { type: "undefined" }],
+        type: "string",
         title: "Phone",
         description: "User's phone number",
         deprecated: true,

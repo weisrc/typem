@@ -5,7 +5,8 @@ import assert from "assert";
 type User = {
   id: string & Format<"uuid">;
   name: string;
-  email: string & Format<"email">;
+  /** @format email */
+  email: string;
   age: number & Minimum<1> & Maximum<99>;
   phone?: string & Pattern<"phone", "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$">;
   friends: User[];
