@@ -1,6 +1,7 @@
 import type { FromInput, Custom } from "typem";
 import {
   handler,
+  HttpError,
   registerBaseExtractors,
   registerExtractor,
   type Extractor,
@@ -17,7 +18,11 @@ const authExtractor: Extractor<Auth> = {
   extract(request) {
     const user = request.headers.get("X-User");
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new HttpError(
+        401,
+        "User not authenticated",
+        "user_not_authenticated"
+      );
     }
     return { user };
   },
@@ -39,4 +44,6 @@ const goodRequest = new Request("http://localhost:8080/hello", {
 });
 
 const response = await helloHandler(goodRequest);
-console.log(await response.json()); // Hello, alice!
+
+console.log(response.status); // 200
+console.log(await response.text()); // "Hello, alice!"

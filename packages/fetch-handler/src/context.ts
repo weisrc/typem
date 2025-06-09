@@ -9,10 +9,7 @@ export let errorHandler: ErrorHandler = (error) => {
     return error.toResponse();
   }
 
-  return new Response("Internal Server Error", {
-    status: 500,
-    statusText: "Internal Server Error",
-  });
+  throw error;
 };
 
 export let outputHandler: OutputHandler = (output) => {

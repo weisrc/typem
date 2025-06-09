@@ -16,3 +16,8 @@ description: Convert functions into HTTP endpoints with validation and serializa
 ```ts
 %include "@examples/fetch-handler/custom-extractor.ts"%
 ```
+
+## Custom Output Handler and Error Handler
+
+- Use `setOutputHandler` to set a custom output handler and `setErrorHandler` to set a custom error handler.
+- By default, all instances of `HttpError` will be caught.
