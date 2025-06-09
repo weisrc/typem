@@ -1,26 +1,60 @@
 import type { FromInput } from "typem";
-import type { Extractor } from "./types";
+import { HttpError, UndefinedOutputError } from "./errors";
+import { type ErrorHandler, type Extractor, type OutputHandler } from "./types";
 
-export type Context = {
-  extractors: Record<string, Extractor<any>>;
+const extractors: Record<string, Extractor<any>> = {};
+
+export let errorHandler: ErrorHandler = (error) => {
+  if (error instanceof HttpError) {
+    return error.toResponse();
+  }
+
+  return new Response("Internal Server Error", {
+    status: 500,
+    statusText: "Internal Server Error",
+  });
 };
 
-export const context: Context = {
-  extractors: {},
+export let outputHandler: OutputHandler = (output) => {
+  if (output === undefined) {
+    throw new UndefinedOutputError();
+  }
+
+  if (output instanceof Response) {
+    return output;
+  }
+
+  if (output instanceof ArrayBuffer) {
+    return new Response(output, {
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+    });
+  }
+
+  return Response.json(output);
 };
+
+export function setErrorHandler(handler: ErrorHandler): void {
+  errorHandler = handler;
+}
+
+export function setOutputHandler(handler: OutputHandler): void {
+  outputHandler = handler;
+}
 
 export function registerExtractor(
   extractor: Extractor<FromInput<string, any>>
 ): void {
   const id = extractor.id;
-  if (context.extractors[id]) {
+  if (extractors[id]) {
     throw new Error(`Extractor ${id} already registered`);
   }
-  context.extractors[id] = extractor;
+  extractors[id] = extractor;
 }
 
 export function getExtractor(id: string): Extractor<FromInput<string, any>> {
-  const extractor = context.extractors[id];
+  const extractor = extractors[id];
   if (!extractor) {
     throw new Error(`Extractor ${id} not found`);
   }
@@ -31,8 +65,8 @@ export function unregisterExtractor(
   extractor: Extractor<FromInput<string, any>>
 ): void {
   const id = extractor.id;
-  if (!context.extractors[id]) {
+  if (!extractors[id]) {
     throw new Error(`Extractor ${id} not registered`);
   }
-  delete context.extractors[id];
+  delete extractors[id];
 }

@@ -16,12 +16,15 @@ export class Reply extends Response implements Custom<"unit"> {
   };
 }
 
+export type ErrorHandler = (error: unknown) => Response | Promise<Response>;
+export type OutputHandler = (output: unknown) => Response | Promise<Response>;
+
 export type Merged<T> = {
   fromInput?: [string, any];
   predicate: Predicate<T>;
   schema: JsonSchema<T>;
   inner?: {
-    mode: "union" | "intersection" | "tuple" | "optional"
+    mode: "union" | "intersection" | "tuple" | "optional";
     types: Merged<any>[];
   };
 };
@@ -48,7 +51,7 @@ export type FetchHandlerMacro = <
 export type Extractor<T extends FromInput<string, any>> = {
   readonly id: GetFromInputId<T>;
   extract(request: HandlerRequest, param: GetFromInputParam<T>): any;
-  updateSchema(
+  updateSchema?(
     operationSchema: OperationSchema,
     param: GetFromInputParam<T>,
     dataSchema: any

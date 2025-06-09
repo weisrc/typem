@@ -71,8 +71,7 @@ export function getPredicateExtractorsWithSchema(
       param,
       optional,
     });
-
-    extractor.updateSchema(operationSchema, param, schema());
+    extractor.updateSchema?.(operationSchema, param, schema());
   }
 
   return { predicateExtractors, operationSchema };

@@ -1,13 +1,15 @@
 import { getErrors, type Predicate } from "@typem/predicate";
 import type { FromInput } from "typem";
 import type { AnnotationHandler } from "typem/macro";
-import type {
-  FetchHandler,
-  FetchHandlerMacro,
-  Merged,
-  HandlerRequest,
+import {
+  type FetchHandler,
+  type FetchHandlerMacro,
+  type Merged,
+  type HandlerRequest,
 } from "./types";
 import { getPredicateExtractorsWithSchema } from "./utils";
+import { ExtractorValidationError, UndefinedOutputError } from "./errors";
+import { errorHandler, outputHandler } from "./context";
 
 export * from "./merged-env";
 
@@ -71,37 +73,19 @@ export function entry(
           args.push(undefined);
           continue;
         }
-        return Response.json(
-          {
-            extractor: {
-              id: extractor.id,
-              param,
-            },
-            errors: getErrors(),
-          },
-          {
-            status: 400,
-          }
-        );
+        throw new ExtractorValidationError(extractor.id, param, getErrors());
       }
 
       return await fn(...args);
     }
 
     async function handler(req: HandlerRequest) {
-      const output = await getHandlerOutput(req);
-
-      if (output === undefined) {
-        return new Response(null, {
-          status: 404,
-        });
+      try {
+        const output = await getHandlerOutput(req);
+        return outputHandler(output);
+      } catch (error) {
+        return errorHandler(error);
       }
-
-      if (output instanceof Response) {
-        return output;
-      }
-
-      return Response.json(output);
     }
 
     return Object.assign(handler, {

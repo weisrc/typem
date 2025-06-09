@@ -21,4 +21,11 @@ export function registerBaseExtractors() {
   registerExtractor(requestExtractor);
 }
 
-export { unregisterExtractor, registerExtractor } from "./context";
+export {
+  unregisterExtractor,
+  registerExtractor,
+  setErrorHandler,
+  setOutputHandler,
+} from "./context";
+
+export * from "./errors";

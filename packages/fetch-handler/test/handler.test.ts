@@ -6,6 +6,7 @@ import {
   type HandlerRequest,
 } from "@typem/fetch-handler";
 import type { Format, FromHeader, FromJson, FromParam, FromQuery } from "typem";
+import { error } from "@typem/predicate/env";
 
 registerBaseExtractors();
 
@@ -17,8 +18,11 @@ it("returns json", async () => {
   const helloHandler = handler(hello);
 
   const req = new Request("http://localhost:3000/hello");
-
-  expect(await (await helloHandler(req)).json()).toEqual("hello world");
+  const response = await helloHandler(req);
+  expect(response.headers.get("Content-Type")).toEqual(
+    "application/json;charset=utf-8"
+  );
+  expect(await response.json()).toEqual("hello world");
 });
 
 it("returns 404 for undefined", async () => {
@@ -47,7 +51,12 @@ it("returns 404 for undefined", async () => {
   const res = await helloHandler(req);
   expect(res).toBeInstanceOf(Response);
   expect(res.status).toEqual(404);
-  expect(await res.text()).toEqual("");
+  expect(await res.json()).toEqual({
+    error: {
+      code: "not_found",
+      message: "Not found",
+    },
+  });
 });
 
 it("returns reply", async () => {
@@ -231,16 +240,20 @@ it("extracts json", async () => {
   expect(res2).toBeInstanceOf(Response);
   expect(res2.status).toEqual(400);
   expect(await res2.json()).toEqual({
-    errors: [
-      {
-        path: [],
-        target: "age",
-        type: "missing-property",
+    error: {
+      code: "validation_error",
+      message: "Validation failed",
+      details: {
+        id: "json",
+        param: [],
+        errors: [
+          {
+            path: [],
+            target: "age",
+            type: "missing-property",
+          },
+        ],
       },
-    ],
-    extractor: {
-      id: "json",
-      param: [],
     },
   });
 });
@@ -291,16 +304,20 @@ it("extracts header", async () => {
   expect(res2).toBeInstanceOf(Response);
   expect(res2.status).toEqual(400);
   expect(await res2.json()).toEqual({
-    errors: [
-      {
-        path: [],
-        target: "uuid",
-        type: "invalid-format",
+    error: {
+      code: "validation_error",
+      message: "Validation failed",
+      details: {
+        id: "header",
+        param: "x-id",
+        errors: [
+          {
+            path: [],
+            target: "uuid",
+            type: "invalid-format",
+          },
+        ],
       },
-    ],
-    extractor: {
-      id: "header",
-      param: "x-id",
     },
   });
 });

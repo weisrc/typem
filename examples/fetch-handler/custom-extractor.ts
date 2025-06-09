@@ -2,35 +2,41 @@ import type { FromInput, Custom } from "typem";
 import {
   handler,
   registerBaseExtractors,
+  registerExtractor,
   type Extractor,
 } from "@typem/fetch-handler";
 
 type AuthData = {
   user: string;
-  roles: string[];
-};
+} & Custom<"unit">;
 
-type FromAuth = FromInput<"auth", []>;
+type Auth = AuthData & FromInput<"auth", []>;
 
-const authExtractor: Extractor<FromAuth> = {
+const authExtractor: Extractor<Auth> = {
   id: "auth",
   extract(request) {
-    // Simulate extracting auth data from a request
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader) return undefined;
-
-    const [user, ...roles] = authHeader.split(" ");
-    return { user, roles };
-  },
-  updateSchema(operationSchema, _param, dataSchema) {
-    operationSchema.parameters = [
-      ...(operationSchema.parameters ?? []),
-      {
-        in: "header",
-        name: "Authorization",
-        schema: dataSchema,
-        required: true,
-      },
-    ];
+    const user = request.headers.get("X-User");
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+    return { user };
   },
 };
+
+registerBaseExtractors();
+registerExtractor(authExtractor);
+
+function hello(auth: Auth) {
+  return `Hello, ${auth.user}!`;
+}
+
+const helloHandler = handler(hello);
+
+const goodRequest = new Request("http://localhost:8080/hello", {
+  headers: {
+    "X-User": "alice",
+  },
+});
+
+const response = await helloHandler(goodRequest);
+console.log(await response.json()); // Hello, alice!

@@ -1,6 +1,8 @@
 import { macro } from "typem/macro";
 import { context, resetContext } from "./context";
 
+export type { ValidationError } from "./context";
+
 export type Predicate<T> = (x: any) => x is T;
 export type PredicateMacro = <T>() => Predicate<T>;
 export const predicate = macro<PredicateMacro, "@typem/predicate/env">();

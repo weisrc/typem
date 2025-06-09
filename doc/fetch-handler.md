@@ -13,3 +13,6 @@ description: Convert functions into HTTP endpoints with validation and serializa
 
 ## Defining a custom extractor
 
+```ts
+%include "@examples/fetch-handler/custom-extractor.ts"%
+```
