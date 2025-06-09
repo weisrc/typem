@@ -10,6 +10,7 @@ import {
   resetVisited,
 } from "./context";
 export * from "./annotations-env";
+export * from "./custom-env";
 
 export function entry<T>(t: Predicate<T>) {
   return (() => (x) => {
@@ -110,29 +111,6 @@ export function object<T extends object>(
   }) as Predicate<T>;
 }
 
-export function array<T>(type: Predicate<T>): Predicate<T[]> {
-  return ((x: any) => {
-    if (!Array.isArray(x)) {
-      errorAdd("invalid-type", "array");
-      return false;
-    }
-    let ok = true;
-    for (let i = 0; i < x.length; i++) {
-      const item = x[i];
-      errorPathPush(i);
-      const innerOk = type(item);
-      errorPathPop();
-      if (!innerOk) {
-        ok = false;
-        if (context.firstErrorOnly) {
-          return ok;
-        }
-      }
-    }
-    return ok;
-  }) as Predicate<T[]>;
-}
-
 export function union<T>(types: Predicate<T>[]): Predicate<T> {
   return ((x: any) => {
     for (const type of types) {
@@ -206,34 +184,6 @@ export function recursive<T>(
   return type;
 }
 
-export function tuple<T extends any[]>(
-  ...types: Predicate<T[number]>[]
-): Predicate<T> {
-  return ((x: any) => {
-    if (!Array.isArray(x)) {
-      errorAdd("invalid-type", "array");
-      return false;
-    }
-    if (x.length !== types.length) {
-      errorAdd("invalid-size", types.length);
-      return false;
-    }
-    let ok = true;
-    for (let i = 0; i < types.length; i++) {
-      errorPathPush(i);
-      const innerOk = types[i](x[i]);
-      errorPathPop();
-      if (!innerOk) {
-        ok = false;
-        if (context.firstErrorOnly) {
-          return ok;
-        }
-      }
-    }
-    return ok;
-  }) as Predicate<T>;
-}
-
 export function callable(): Predicate<never> {
   throw new Error("Cannot validate callable types");
 }
@@ -286,7 +236,6 @@ export function optional<T>(type: Predicate<T>): Predicate<T | undefined> {
 const env: Env<PredicateMacro, Predicate<any>> = {
   entry,
   error,
-  array,
   general,
   record,
   intersection,
@@ -296,7 +245,6 @@ const env: Env<PredicateMacro, Predicate<any>> = {
   special,
   union,
   discriminatedUnion,
-  tuple,
   callable,
   optional,
 };

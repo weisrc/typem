@@ -1,9 +1,8 @@
 import ts from "typescript";
 
-export const BUILTIN_MAP = {
+export const CUSTOM_MAP = {
   Tuple: "tuple",
   Array: "array",
-  TypedArray: "typedArray",
   Int8Array: "int8Array",
   Uint8Array: "uint8Array",
   Uint8ClampedArray: "uint8ClampedArray",
@@ -18,16 +17,9 @@ export const BUILTIN_MAP = {
   BigUint64Array: "bigUint64Array",
   Map: "map",
   Set: "set",
-  WeakMap: "weakMap",
-  WeakSet: "weakSet",
   ArrayBuffer: "arrayBuffer",
   SharedArrayBuffer: "sharedArrayBuffer",
   DataView: "dataView",
-  Iterator: "iterator",
-  AsyncIterator: "asyncIterator",
-  Promise: "promise",
-  Generator: "generator",
-  AsyncGenerator: "asyncGenerator",
 } as const;
 
 export const MODIFIER_MAP = {
@@ -48,7 +40,7 @@ export const MODIFIER_MAP = {
   [ts.SyntaxKind.StaticKeyword]: "staticModifier",
 } as const;
 
-export const RESERVED_WORDS = [
+export const RESERVED_NAMES = [
   "break",
   "case",
   "catch",

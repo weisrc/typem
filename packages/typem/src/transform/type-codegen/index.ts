@@ -9,7 +9,7 @@ import {
   type TypeMap,
 } from "./common";
 import {
-  builtinCodegen,
+  customCodegen,
   getAnnotations,
   annotatedIntersectionCodegen,
   signaturesCodegen,
@@ -50,9 +50,9 @@ function innerCodegen(
   const annotations = getAnnotations(context, type);
 
   debug("annotations", annotations);
-  if (annotations && "builtin" in annotations) {
-    const inner = builtinCodegen(context, annotations.builtin, type, typeMap);
-    delete annotations.builtin;
+  if (annotations && "custom" in annotations) {
+    const inner = customCodegen(context, annotations.custom, type, typeMap);
+    delete annotations.custom;
     return wrapWithAnnotations(annotations, inner);
   }
 
@@ -75,13 +75,13 @@ function innerCodegen(
   } else if (type.isIntersection()) {
     return annotatedIntersectionCodegen(context, type.types, typeMap);
   } else if (context.checker.isTupleType(type)) {
-    return builtinCodegen(context, "tuple", type, typeMap);
+    return customCodegen(context, "tuple", type, typeMap);
   }
 
   const qualifiedName = context.checker.getFullyQualifiedName(type.symbol);
-  const bultinName = context.builtins[qualifiedName];
+  const bultinName = context.customMap[qualifiedName];
   if (bultinName) {
-    return builtinCodegen(context, bultinName, type, typeMap);
+    return customCodegen(context, bultinName, type, typeMap);
   }
 
   if (annotations) {

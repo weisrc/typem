@@ -9,8 +9,8 @@ export type TransformContext = {
   checker: ts.TypeChecker;
   options: ts.CompilerOptions;
   addModule: AddModuleFn;
-  builtins: Record<string, string>;
-  reservedWords: readonly string[];
+  customMap: Record<string, string>;
+  reservedNames: readonly string[];
 };
 
 export function replaceNodeText(
@@ -78,7 +78,7 @@ export function augmentNode(
     node.getText().length,
     node.getSourceFile(),
     context.checker,
-    context.reservedWords
+    context.reservedNames
   );
 
   replaceNodeText(context, node, id);

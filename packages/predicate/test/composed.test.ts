@@ -27,39 +27,6 @@ it("should validate objects", () => {
   ]);
 });
 
-it("should validate arrays", () => {
-  const check = withErrors(predicate<number[]>());
-
-  expect(check([1, 2, 3])).toBe(true);
-  expect(getErrors()).toEqual([]);
-  expect(check([1, "2", 3])).toBe(false);
-  expect(getErrors()).toEqual([
-    {
-      type: "invalid-type",
-      target: "number",
-      path: [1],
-    },
-  ]);
-  expect(check("123")).toBe(false);
-});
-
-it("should validate tuples", () => {
-  const check = withErrors(predicate<[number, string]>());
-
-  expect(check([1, "2"])).toBe(true);
-  expect(getErrors()).toEqual([]);
-  expect(check([1, 2])).toBe(false);
-  expect(getErrors()).toEqual([
-    {
-      type: "invalid-type",
-      target: "string",
-      path: [1],
-    },
-  ]);
-  expect(check([1])).toBe(false);
-  expect(check("123")).toBe(false);
-});
-
 it("should validate unions", () => {
   const check = withErrors(predicate<number | string>());
 

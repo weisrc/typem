@@ -1,11 +1,11 @@
 import { transform } from "../transform";
 import { readFile } from "fs/promises";
 import ts from "typescript";
-import { BUILTIN_MAP, RESERVED_WORDS } from "../constants";
+import { CUSTOM_MAP, RESERVED_NAMES } from "../constants";
 
 export type TypeMacroOptions = {
-  builtins?: Record<string, string>;
-  reservedWords?: string[];
+  customMap?: Record<string, string>;
+  reservedNames?: string[];
 };
 
 export function base(
@@ -26,8 +26,8 @@ export function base(
         program,
         addModule,
         path,
-        options.builtins ?? BUILTIN_MAP,
-        options.reservedWords ?? RESERVED_WORDS
+        options.customMap ?? CUSTOM_MAP,
+        options.reservedNames ?? RESERVED_NAMES
       ) ?? (await readFile(path, "utf-8"))
     );
   }

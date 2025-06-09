@@ -1,6 +1,10 @@
 import { $ } from "bun";
 
-async function runBuild(name: string) {
+const PACKAGES = ["typem", "routes-openapi"];
+
+const MACRO_PACKAGES = ["json-schema", "predicate", "fetch-handler"];
+
+async function build(name: string) {
   console.log(`Building ${name}`);
   await $`cd packages/${name}; bun run build`;
 }
@@ -23,11 +27,12 @@ async function buildMacro(name: string) {
 }
 
 export async function buildAll() {
-  runBuild("typem");
+  for (const name of PACKAGES) {
+    await build(name);
+  }
 
-  const macroPackages = ["json-schema", "predicate", "fetch-handler"];
-  for (const pkg of macroPackages) {
-    await buildMacro(pkg);
+  for (const name of MACRO_PACKAGES) {
+    await buildMacro(name);
   }
 }
 

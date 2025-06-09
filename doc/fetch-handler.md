@@ -6,3 +6,10 @@ description: Convert functions into HTTP endpoints with validation and serializa
 # {{ $frontmatter.title }}
 
 {{ $frontmatter.description }}
+
+```ts
+%include "@examples/fetch-handler/hello.ts"%
+```
+
+## Defining a custom extractor
+

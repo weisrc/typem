@@ -1,4 +1,4 @@
-import type { BUILTIN_MAP, MODIFIER_MAP } from "./constants";
+import type { CUSTOM_MAP, MODIFIER_MAP } from "./constants";
 import type { GeneralType, SpecialType } from "./transform/type-codegen/common";
 
 export function macro<T extends (...args: any) => any, P extends string>() {
@@ -24,7 +24,7 @@ export type Annotation<T extends string, U> = {
 
 export type { GeneralType, SpecialType };
 
-type BuiltinMap = typeof BUILTIN_MAP;
+type CustomMap = typeof CUSTOM_MAP;
 type ModifierMap = typeof MODIFIER_MAP;
 
 export type Env<T, U> = {
@@ -42,7 +42,7 @@ export type Env<T, U> = {
   callable(t: U, signatures: [U[], U][]): U;
   optional(t: U): U;
 } & {
-  [key in BuiltinMap[keyof BuiltinMap]]?: (...t: U[]) => U;
+  [key in CustomMap[keyof CustomMap]]?: (...t: U[]) => U;
 } & {
   [key in ModifierMap[keyof ModifierMap]]?: (t: U) => U;
 };

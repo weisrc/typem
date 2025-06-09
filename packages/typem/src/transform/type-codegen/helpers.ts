@@ -3,7 +3,7 @@ import { typeCodegen } from ".";
 import { getMarker, type TransformContext } from "../context";
 import { type TypeMap } from "./common";
 
-export function builtinCodegen(
+export function customCodegen(
   context: TransformContext,
   name: string,
   type: ts.Type,
@@ -15,7 +15,7 @@ export function builtinCodegen(
     .join(", ");
 
   const error = `t.error(${JSON.stringify(
-    `Type "${name}" not found in builtins.`
+    `Type "${name}" not found in custom map.`
   )})`;
 
   return `t.${name} ? t.${name}(${inner}) : ${error}`;

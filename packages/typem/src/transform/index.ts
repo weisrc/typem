@@ -6,8 +6,8 @@ export function transform(
   program: ts.Program,
   addModule: AddModuleFn,
   filePath: string,
-  builtins: Record<string, string>,
-  reservedWords: readonly string[]
+  customMap: Record<string, string>,
+  reservedNames: readonly string[]
 ): string | undefined {
   const sourceFile = program.getSourceFile(filePath);
 
@@ -20,8 +20,8 @@ export function transform(
     checker: program.getTypeChecker(),
     options: program.getCompilerOptions(),
     addModule,
-    builtins,
-    reservedWords,
+    customMap,
+    reservedNames,
   };
 
   visitNode(context, sourceFile);

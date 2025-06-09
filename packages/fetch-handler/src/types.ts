@@ -2,17 +2,17 @@ import type { JsonSchema } from "@typem/json-schema";
 import type { Predicate } from "@typem/predicate";
 
 import type { OpenAPIV3_1 } from "openapi-types";
-import { type Builtin, type FromInput, type FromRequest } from "typem";
+import { type Custom, type FromInput, type FromRequest } from "typem";
 
 export type HandlerRequest = Request & {
   params?: Record<string, string>;
   urlObject?: URL;
-} & Builtin<"unit"> &
+} & Custom<"unit"> &
   FromRequest;
 
-export class Reply extends Response implements Builtin<"unit"> {
+export class Reply extends Response implements Custom<"unit"> {
   __annotation?: {
-    builtin: "unit";
+    custom: "unit";
   };
 }
 
